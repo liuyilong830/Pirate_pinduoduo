@@ -1,0 +1,20 @@
+@import 'http://at.alicdn.com/t/font_1626366_1idi1tb9dvj.css';
+
+html,body {
+  width: 100vw;
+  height: 100vh;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  font-size: 14px;
+}
+
+a {
+  text-decoration: none;
+}
+
+li {
+  list-style: none;
+}
