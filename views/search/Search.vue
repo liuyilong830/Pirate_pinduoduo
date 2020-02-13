@@ -84,7 +84,6 @@
       })
       // 获取指定sid的内容数据
       getSearchItem(this.sid).then(res => {
-        console.log(res.message)
         this.listItem = res.message
       })
     }

@@ -326,7 +326,21 @@ router.get('/api/user_info' , (req,res) => {
   LoginCRUD.getUserByUserId(req.session.userId).then(data => {
     // 进入else之后说明存在该用户，则需要将对象传给组件中用以展示
     data[0].mode = req.session.mode
-    delete req.session.mode
+    res.json({
+      success_code: 200,
+      message: data[0]
+    })
+  }).catch(err => {
+    res.json({
+      err_code: 500,
+      message: '请求失败...'
+    })
+  })
+})
+// 获取用户信息
+router.get('/user_info' , (req,res) => {
+  LoginCRUD.getUserByUserId(req.session.userId).then(data => {
+    console.log(data[0])
     res.json({
       success_code: 200,
       message: data[0]

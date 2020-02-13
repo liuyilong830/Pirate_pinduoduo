@@ -15,10 +15,9 @@
     components: {
       MainTabBar
     },
-    mounted() {
+    created() {
       loginUser().then(res => {
         if(res.success_code === 200) {
-          console.log(res)
           this.$store.commit('setUserInfo',{userInfo: res.message})
         }
       })

@@ -9,6 +9,7 @@ const Search = () => import('../../views/search/Search.vue')
 const Chat = () => import('../../views/chat/Chat.vue')
 const Profile = () => import('../../views/profile/Profile.vue')
 const Login = () => import('../../views/profile/children/Login.vue')
+const PersonInfo = () => import('../../views/profile/children/PersonInfo.vue')
 
 const Hot = () => import('../../views/home/chirdren/Hot.vue')
 const Man = () => import('../../views/home/chirdren/Man.vue')
@@ -61,7 +62,8 @@ const routes = [
   { path: '/chat' , component: Chat },
   { path: '/profile' , component: Profile },
   { path: '/detail/:id' , component: Detail},
-  { path: '/login' , component: Login}
+  { path: '/login' , component: Login},
+  { path: '/person_info' , component: PersonInfo}
 ]
 
 export default new Router({

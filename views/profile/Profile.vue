@@ -8,7 +8,14 @@
     </div>
     
     <b-scroll v-else :probeType='3' :pullUpLoad='true' class="wrapper_profile">
+      <!-- 顶部基本信息 -->
       <base-info></base-info>
+      <!-- 订单版块 -->
+      <order-info></order-info>
+      <!-- 售后版块 -->
+      <customer-service></customer-service>
+      <!-- 其他版块 -->
+      <other></other>
     </b-scroll>
 
   </div>
@@ -20,6 +27,9 @@
   import Login from './children/Login'
   import {mapGetters} from 'vuex'
   import BaseInfo from './children/BaseInfo'
+  import OrderInfo from './children/OrderInfo'
+  import CustomerService from './children/CustomerService'
+  import Other from './children/Other'
 
   export default {
     name: 'Profile',
@@ -27,7 +37,10 @@
       BScroll,
       BeforeLogin,
       Login,
-      BaseInfo
+      BaseInfo,
+      OrderInfo,
+      CustomerService,
+      Other
     },
     data() {
       return {
@@ -35,18 +48,11 @@
         isLoginShow: true
       }
     },
-    props: {
-      user: {
-        type: Object,
-        default() {
-          return {}
-        }
-      }
-    },
     computed: {
       ...mapGetters(['showLoginComp'])
     },
     methods: {
+      // 登录的时候先展示蒙版
       loginClick() {
         this.isShow = true
       }
