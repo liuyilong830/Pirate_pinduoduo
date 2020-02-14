@@ -340,7 +340,6 @@ router.get('/api/user_info' , (req,res) => {
 // 获取用户信息
 router.get('/user_info' , (req,res) => {
   LoginCRUD.getUserByUserId(req.session.userId).then(data => {
-    console.log(data[0])
     res.json({
       success_code: 200,
       message: data[0]

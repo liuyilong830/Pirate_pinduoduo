@@ -18,18 +18,38 @@
         <span class="title">地区</span>
         <span>{{ getRegion }}</span>
       </div>
+      <div class="item" @click="setBirthday">
+        <span class="title">生日</span>
+        <span>{{ getBirthday }}</span>
+      </div>
+      <div class="item">
+        <span class="title">个性签名</span>
+        <span>{{ getRegion }}</span>
+      </div>
+      <div class="item">
+        <span class="title">多多号</span>
+        <span>{{ userInfo.uid }}</span>
+      </div>
     </div>
+
+    <birthday-popup :value='popupVisible' @change="birthdayClick"></birthday-popup>
   </div>
 </template>
 
 <script>
   import {mapGetters} from 'vuex'
   import {getUser} from '../../../src/network/profile'
+  import BirthdayPopup from '../../../src/components/common/popup/BirthdayPopup'
   export default {
     name: 'PersonInfo',
+    components: {
+      BirthdayPopup
+    },
     data() {
       return {
-        userInfo: {}
+        userInfo: {},
+        popupVisible: false,
+        date: null
       }
     },
     computed: {
@@ -48,8 +68,21 @@
       changeNickName() {
         if(this.userInfo.phone) {
           var str = this.userInfo.phone.substr(3,4)
+          return this.userInfo.phone.replace(str,'****')
         }
-        return this.userInfo.phone.replace(str,'****')
+        return 
+      },
+      getBirthday() {
+        return this.date? `${this.date.year}年${this.date.mouth}月${this.date.day}日` : '无'
+      }
+    },
+    methods: {
+      setBirthday() {
+        this.popupVisible = true
+      },
+      birthdayClick(event) {
+        this.popupVisible = event.value
+        this.date = event.date
       }
     },
     mounted() {
@@ -98,7 +131,7 @@
     border-radius: 50%;
   }
   .item span {
-    color: #58595b;
+    color: #8f9196;
   }
   .item .title {
     font-size: 15px;

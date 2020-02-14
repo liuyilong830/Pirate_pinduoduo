@@ -56,9 +56,6 @@
       loginClick() {
         this.isShow = true
       }
-    },
-    created() {
-      console.log('created')
     }
   }
 </script>

@@ -37,8 +37,8 @@
       ...mapGetters(['getUserInfo']),
       // 将手机号转换成指定格式
       getFilterPhone() {
-        if(!this.userInfo.phone) {
-          return this.userInfo.phone = '未绑定手机号'
+        if(!this.userInfo.mode) {
+          return this.userInfo.username
         }else {
           // 15073382436 => 150****2436
           var str = this.userInfo.phone.substr(3,4)
