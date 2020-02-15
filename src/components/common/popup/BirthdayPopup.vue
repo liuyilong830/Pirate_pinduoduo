@@ -1,5 +1,5 @@
 <template>
-  <div class="birthday_popup" v-show="value">
+  <div class="birthday_popup">
     <div class="content">
       <div class="content_top">
         <div class="birthday">
@@ -7,13 +7,13 @@
             <span>{{showYear}}</span>
           </span>
           <span class="item" v-show="date.year" @click="changeMD(1)" :class="{active: statis==1}">
-            <span>{{showMouth}}</span>
+            <span>{{showMonth}}</span>
           </span>
-          <span class="item" v-show="date.mouth" @click="changeMD(2)" :class="{active: statis==2}">
+          <span class="item" v-show="date.month" @click="changeMD(2)" :class="{active: statis==2}">
             <span>{{showDay}}</span>
           </span>
         </div>
-        <span class="close" @click="closePopup(date)">取消</span>
+        <span class="close" @click="closePopup">取消</span>
       </div>
       <ul class="date_year" v-show="statis == 0">
         <li v-for="index in getYear" :key="index" class="public" @click="yearClick(index)">
@@ -22,7 +22,7 @@
         </li>
       </ul>
       <ul class="date_mouth" v-show="statis == 1">
-        <li v-for="index in getMouth" :key="index" class="public" @click="mouthClick(index)">
+        <li v-for="index in getMonth" :key="index" class="public" @click="monthClick(index)">
           <span>{{index}}月</span>
           <span>></span>
         </li>
@@ -40,19 +40,18 @@
 <script>
   export default {
     name: 'BirthdayPopup',
-    props: {
-      value: {
-        type: Boolean,
-        default: false
-      }
+    model: {
+      prop: 'val1',
+      event: 'click'
     },
     data() {
       return {
         date: {
           year: null,
-          mouth: null,
+          month: null,
           day: null
         },
+        dd: {},
         statis: 0 // 0 => 年；1 => 月；2 => 日
       }
     },
@@ -64,7 +63,7 @@
         }
         return arr
       },
-      getMouth() {
+      getMonth() {
         var arr = []
         for(var i = 1; i<= 12; i++) {
           arr.push(i)
@@ -73,7 +72,7 @@
       },
       getDay() {
         var arr = []
-        var m = this.date.mouth
+        var m = this.date.month
         var y = this.date.year
         if(m==1 || m==3 || m==5 || m==7 || m==8 || m==10 ||m==12) {
           for(var i = 1; i<= 31; i++) {
@@ -97,8 +96,8 @@
       showYear() {
         return this.date.year? this.date.year + '年' : '请选择'
       },
-      showMouth() {
-        return this.date.mouth? this.date.mouth + '月' : '请选择'
+      showMonth() {
+        return this.date.month? this.date.month + '月' : '请选择'
       },
       showDay() {
         return this.date.day? this.date.day + '日' : '请选择'
@@ -108,28 +107,43 @@
       }
     },
     methods: {
-      closePopup(date) {
-        this.statis = 0
-        var obj = {
-          value: !this.value,
-          date
+      // 点击取消按钮时处理的方法
+      closePopup() {
+        // 该if情况说明的是如果只修改了其中一部分日期，并没有完全设置完就点取消按钮时，应该把日期设置回之前的日期
+        if(!this.date.day) {
+          this.$emit('update:year', this.dd.year)
+          this.$emit('update:month', this.dd.month)
         }
-        this.$emit('change',obj)
+        // 关闭组件，与v-model属性对应
+        this.$emit('click',false)
       },
+      // 点击年份的时候，将点击的年份设置为需要显示的年份，并且将状态设置为1，切换成月份展示
       yearClick(index) {
         this.date.year = index
         this.statis = 1
-        this.date.mouth = null
+        this.date.month = null
         this.date.day = null
+        // 动态绑定父子组件的 date.year的值
+        this.$emit('update:year', this.date.year)
       },
-      mouthClick(index) {
-        this.date.mouth = index
+      // 点击月份的时候，将点击的月份设置为需要显示的月份，并且将状态设置为2，切换成日的展示
+      monthClick(index) {
+        this.date.month = index
         this.statis = 2
+        this.date.day = null
+        // 动态绑定父子组件的 date.month的值
+        this.$emit('update:month', this.date.month)
       },
+      // 点击日的时候即为默认保存日期，则需要调用关闭组件的函数，同时需要将日设置为需要的日
       dayClick(index) {
         this.date.day = index
-        this.closePopup(this.date)
+        // 并动态设置父子组件的 date.day的值
+        this.$emit('update:day', this.date.day)
+        // 用于父组件中保存日期之后的回调函数
+        this.$emit('confirm',this.date)
+        this.closePopup()
       },
+      // 当用户修改了年份之后发现需要重新设置年份的时候需要手动点击年份区域
       changeYear() {
         this.statis = 0
       },
@@ -138,6 +152,11 @@
           this.statis = num
         }
       }
+    },
+    mounted() {
+      this.date.year = this.dd.year = this.$attrs.year
+      this.date.month = this.dd.month  = this.$attrs.month
+      this.date.day = this.$attrs.day
     }
   }
 </script>

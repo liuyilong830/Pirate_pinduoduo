@@ -5,3 +5,11 @@ export function getUser() {
     url: '/user_info'
   })
 }
+
+export function setUserBaseInfo(data) {
+  return request({
+    method: 'POST',
+    url: '/user_baseInfo',
+    data
+  })
+}

@@ -63,3 +63,13 @@ exports.getUserByUserId = function (userId) {
     })
   })
 }
+// 根据用户的id修改信息
+exports.setUserBirthday = function (uid, value) {
+  return new Promise((resolve,reject) => {
+    var sql = 'update users set date=? where uid=?'
+    connection.query(sql, [value,uid] , (error,data) => {
+      if(error) reject(error)
+      resolve(data)
+    })
+  })
+}

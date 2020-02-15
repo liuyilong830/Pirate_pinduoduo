@@ -351,5 +351,19 @@ router.get('/user_info' , (req,res) => {
     })
   })
 })
+// 设置用户个人信息
+router.post('/user_baseInfo' , (req,res) => {
+  LoginCRUD.setUserBirthday(req.session.userId , req.body.date).then(data => {
+    res.json({
+      success_code: 200,
+      message: '修改成功...'
+    })
+  }).catch(err => {
+    res.json({
+      err_code: 500,
+      message: err.message
+    })
+  })
+})
 
 module.exports = router

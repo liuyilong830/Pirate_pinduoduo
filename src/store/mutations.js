@@ -1,9 +1,11 @@
 export default {
   setUserInfo(state,payload) {
-    /* for(var key in payload.userInfo) {
-      window.sessionStorage.setItem(key,payload.userInfo[key] + '')
-      state.userInfo[key] = payload.userInfo[key]
-    } */
+    window.sessionStorage.setItem('userInfo',JSON.stringify(payload.userInfo))
     state.userInfo = payload.userInfo
+  },
+  setDateTime(state,payload) {
+    var obj = Object.assign({},state.userInfo,payload)
+    window.sessionStorage.setItem('userInfo',JSON.stringify(obj))
+    state.userInfo = obj
   }
 }

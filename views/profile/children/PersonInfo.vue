@@ -11,6 +11,10 @@
         <span>{{ getNickName }}</span>
       </div>
       <div class="item">
+        <span class="title">手机号</span>
+        <span>{{ getPhone }}</span>
+      </div>
+      <div class="item">
         <span class="title">性别</span>
         <span>{{ getSex }}</span>
       </div>
@@ -32,13 +36,13 @@
       </div>
     </div>
 
-    <birthday-popup :value='popupVisible' @change="birthdayClick"></birthday-popup>
+    <birthday-popup v-model='popupVisible' v-bind.sync='date' @confirm='handleConfirm' v-if="popupVisible"></birthday-popup>
   </div>
 </template>
 
 <script>
   import {mapGetters} from 'vuex'
-  import {getUser} from '../../../src/network/profile'
+  import {getUser,setUserBaseInfo} from '../../../src/network/profile'
   import BirthdayPopup from '../../../src/components/common/popup/BirthdayPopup'
   export default {
     name: 'PersonInfo',
@@ -49,48 +53,76 @@
       return {
         userInfo: {},
         popupVisible: false,
-        date: null
+        date: {
+          year: null,
+          month: null,
+          day: null
+        }
       }
     },
     computed: {
+      // 展示性别
       getSex() {
-        return this.userInfo.sex? this.userInfo.sex : '无'
+        return this.userInfo.sex? this.userInfo.sex : '未知'
       },
+      // 展示昵称
       getNickName() {
-        if(this.userInfo.phone) {
-          var str = this.userInfo.phone.substr(3,4)
-        }
-        return this.userInfo.username? this.userInfo.username : this.userInfo.phone
+        return this.userInfo.username? this.userInfo.username : '未设置'
       },
+      // 展示个信签名
       getRegion() {
         return this.userInfo.region? this.userInfo.region : '无'
       },
-      changeNickName() {
+      // 展示手机号
+      getPhone() {
         if(this.userInfo.phone) {
           var str = this.userInfo.phone.substr(3,4)
           return this.userInfo.phone.replace(str,'****')
         }
-        return 
+        return '未绑定'
       },
+      // 展示生日
       getBirthday() {
-        return this.date? `${this.date.year}年${this.date.mouth}月${this.date.day}日` : '无'
+        // 先判断是否存在临时day只，存在的情况只能是从日期选择组件中选择的
+        if(this.date.day) {
+          return this.date.day? `${this.date.year}-${this.date.month}-${this.date.day}` : '无'
+        }else if(this.userInfo.date) {
+          // 如果没有临时day则判断sessionStorage中或者数据库中是否存在
+          var dd =new Date(this.userInfo.date)
+          this.date = {
+            year: dd.getFullYear(),
+            month: dd.getMonth()+1,
+            day: dd.getDate()
+          }
+        }
+        return this.date.day? `${this.date.year}-${this.date.month}-${this.date.day}` : '无'
       }
     },
     methods: {
+      // 点击生日部分，展示生日列表选择组件
       setBirthday() {
         this.popupVisible = true
       },
-      birthdayClick(event) {
-        this.popupVisible = event.value
-        this.date = event.date
+      // 点击日时间之后的回调函数
+      handleConfirm(date) {
+        this.date = date
+        date = this.changeDate(this.date)
+        setUserBaseInfo({date}).then(res => {
+          // console.log(res.message)
+        })
+        this.$store.commit('setDateTime',{date})
+      },
+      // 在生日列表选择组件选择玩日期后将得到的日期对象转换为指定的格式输出
+      changeDate(date) {
+        return `${date.year}-${date.month}-${date.day}`
       }
     },
-    mounted() {
+    created() {
       // 获取个人信息数据
-      getUser().then(res => {
+      /* getUser().then(res => {
         this.userInfo = res.message
-        this.userInfo.phone = this.changeNickName
-      })
+      }) */
+      this.userInfo = JSON.parse(window.sessionStorage.getItem('userInfo'))
     }
   }
 </script>
