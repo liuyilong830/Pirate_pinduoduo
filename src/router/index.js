@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import {getToken} from '../network/token'
 
 Vue.use(Router)
 
@@ -42,30 +43,51 @@ const routes = [
           return to.matched[0].redirect
         }
       }},
-      { path: 'hot', component: Hot},
-      { path: 'man' , component: Man},
-      { path: 'phone' , component: Phone},
-      { path: 'shoebag' , component: ShoeBag},
-      { path: 'food' , component: Food},
-      { path: 'electric' , component: Electric},
-      { path: 'car' , component: Car},
-      { path: 'women' , component: Women},
-      { path: 'department' , component: Department},
-      { path: 'furniture' , component: Furniture},
-      { path: 'underwear' , component: Underwear},
-      { path: 'homedecoration' , component: HomeDecoration},
-      { path: 'computer' , component: Computer}
+      { path: 'hot', component: Hot , meta:{showTabBar:true}},
+      { path: 'man' , component: Man , meta:{showTabBar:true}},
+      { path: 'phone' , component: Phone , meta:{showTabBar:true}},
+      { path: 'shoebag' , component: ShoeBag , meta:{showTabBar:true}},
+      { path: 'food' , component: Food , meta:{showTabBar:true}},
+      { path: 'electric' , component: Electric , meta:{showTabBar:true}},
+      { path: 'car' , component: Car , meta:{showTabBar:true}},
+      { path: 'women' , component: Women , meta:{showTabBar:true}},
+      { path: 'department' , component: Department , meta:{showTabBar:true}},
+      { path: 'furniture' , component: Furniture , meta:{showTabBar:true}},
+      { path: 'underwear' , component: Underwear , meta:{showTabBar:true}},
+      { path: 'homedecoration' , component: HomeDecoration , meta:{showTabBar:true}},
+      { path: 'computer' , component: Computer , meta:{showTabBar:true}}
     ]
   },
-  { path: '/recommend' , component: Recommend },
-  { path: '/search' , component: Search },
-  { path: '/chat' , component: Chat },
-  { path: '/profile' , component: Profile },
+  { path: '/recommend' , component: Recommend , meta:{showTabBar:true}},
+  { path: '/search' , component: Search , meta:{showTabBar:true}},
+  { path: '/chat' , component: Chat , meta:{showTabBar:true}},
+  { path: '/profile' , component: Profile , meta:{showTabBar:true}},
   { path: '/detail/:id' , component: Detail},
   { path: '/login' , component: Login},
   { path: '/person_info' , component: PersonInfo}
 ]
 
-export default new Router({
+const router = new Router({
   routes
 })
+router.beforeEach((to , from , next) => {
+  var tokenStr = window.localStorage.getItem('token')
+  /* if(to.path == '/profile' && !tokenStr) {
+    return next('/login')
+  } */
+  if(to.path == '/person_info' || to.path == '/profile') {
+    getToken(tokenStr).then(res => {
+      // console.log(res)
+      if(res.success_code == 200) {
+        next()
+      } else if(res.err_code == 0) {
+        window.localStorage.removeItem('token')
+        window.localStorage.removeItem('userInfo')
+        return next('/login')
+      }
+    })
+  }
+  next()
+})
+
+export default router

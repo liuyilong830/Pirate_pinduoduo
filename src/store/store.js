@@ -7,7 +7,8 @@ import actions from './actions'
 import getters from './getters'
 
 const state = {
-  userInfo: {}
+  userInfo: JSON.parse(window.localStorage.getItem('userInfo')),
+  token: window.localStorage.getItem('token')
 }
 
 const store = new Vuex.Store({

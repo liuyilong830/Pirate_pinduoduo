@@ -1,72 +1,81 @@
 <template>
-  <div class="login">
-    <div class="main">
-      <div class="logo"></div>
-      <form action="" class="form" ref="form">
-        <!-- 登录方式的切换 -->
-        <div class="top_btn">
-           <span :class="{active: isMode}" @click="isMode = true">短信登录</span>
-           <span :class="{active: !isMode}" @click="isMode = false">密码登录</span>
-        </div>
-        <!-- 短信登录的方式 -->
-        <div class="content" v-if="isMode">
-          <div class="content_phone">
-            <i class="iconfont icon-shoujihao"></i>
-            <input type="text" name="phone" class="public phone" v-model="phone" placeholder="手机号" maxlength="11">
-            <button class="getcode" @click.prevent="getCode" v-if="isBtnShow" :class="{on: getPhoneTest}">获取验证码</button>
-            <button class="getcode" disabled v-else>重新发送{{ codeTime }}s</button>
-          </div>
-          <div class="content_code">
-            <i class="iconfont icon-yanzhengma"></i>
-            <input type="text" name="code" v-model="code" class="public" placeholder="验证码">
-          </div>
-        </div>
-        <!-- 密码登录的方式 -->
-        <div class="content" v-else>
-          <div class="content_phone">
-            <i class="iconfont icon-zhanghao"></i>
-            <input type="text" name="username" v-model="username" class="public" placeholder="请输入账号" maxlength="16">
-          </div>
-          <div class="content_phone">
-            <i class="iconfont icon-mima"></i>
-            <input type="password" name="password" v-model="password" class="public password" placeholder="请输入密码" maxlength="11" v-if="!isPwdShow">
-            <input type="text" name="password" v-model="password" class="public password" placeholder="请输入密码" maxlength="11" v-else>
-            <i class="iconfont icon-zhengyan" v-show="isPwdShow" @click="showPassword"></i>
-            <i class="iconfont icon-biyan" v-show="!isPwdShow" @click="showPassword"></i>
-          </div>
-          <div class="content_code">
-            <i class="iconfont icon-yanzhengma"></i>
-            <input type="text" name="code" v-model="imgcode" class="public code" placeholder="图片验证码">
-            <img class="svg_img" ref="captcha" src="http://localhost:3000/captcha/svg" @click="getSvgImage" alt="">
-          </div>
-        </div>
+  <div>
+    <before-login v-show="true" @loginClick='loginClick' />
+    <transition name="login">
+      <div v-if="isShow" class="login">
+        <div class="main">
+          <div class="logo"></div>
+          <form action="" class="form" ref="form">
+            <!-- 登录方式的切换 -->
+            <div class="top_btn">
+              <span :class="{active: isMode}" @click="isMode = true">短信登录</span>
+              <span :class="{active: !isMode}" @click="isMode = false">密码登录</span>
+            </div>
+            <!-- 短信登录的方式 -->
+            <div class="content" v-if="isMode">
+              <div class="content_phone">
+                <i class="iconfont icon-shoujihao"></i>
+                <input type="text" name="phone" class="public phone" v-model="phone" placeholder="手机号" maxlength="11">
+                <button class="getcode" @click.prevent="getCode" v-if="isBtnShow" :class="{on: getPhoneTest}">获取验证码</button>
+                <button class="getcode" disabled v-else>重新发送{{ codeTime }}s</button>
+              </div>
+              <div class="content_code">
+                <i class="iconfont icon-yanzhengma"></i>
+                <input type="text" name="code" v-model="code" class="public" placeholder="验证码">
+              </div>
+            </div>
+            <!-- 密码登录的方式 -->
+            <div class="content" v-else>
+              <div class="content_phone">
+                <i class="iconfont icon-zhanghao"></i>
+                <input type="text" name="username" v-model="username" class="public" placeholder="请输入账号" maxlength="16">
+              </div>
+              <div class="content_phone">
+                <i class="iconfont icon-mima"></i>
+                <input type="password" name="password" v-model="password" class="public password" placeholder="请输入密码" maxlength="11" v-if="!isPwdShow">
+                <input type="text" name="password" v-model="password" class="public password" placeholder="请输入密码" maxlength="11" v-else>
+                <i class="iconfont icon-zhengyan" v-show="isPwdShow" @click="showPassword"></i>
+                <i class="iconfont icon-biyan" v-show="!isPwdShow" @click="showPassword"></i>
+              </div>
+              <div class="content_code">
+                <i class="iconfont icon-yanzhengma"></i>
+                <input type="text" name="code" v-model="imgcode" class="public code" placeholder="图片验证码">
+                <img class="svg_img" ref="captcha" src="http://localhost:3000/captcha/svg" @click="getSvgImage" alt="">
+              </div>
+            </div>
 
-        <div class="checkbox">
-          <span>已阅读并同意</span>
-          <a href="#" >服务协议与隐私政策</a>
-        </div>
+            <div class="checkbox">
+              <span>已阅读并同意</span>
+              <a href="#" >服务协议与隐私政策</a>
+            </div>
 
-        <div class="footer_btn">
-          <input class="submit" type="submit" value="同意协议并登录" @click.prevent="submitLogin">
-          <button>返回</button>
-        </div>
+            <div class="footer_btn">
+              <input class="submit" type="submit" value="同意协议并登录" @click.prevent="submitLogin">
+              <button>返回</button>
+            </div>
 
-        <toast v-show="isToastShow" :text='text'></toast>
-      </form>
-    </div>
+            <toast v-show="isToastShow" :text='text'></toast>
+          </form>
+        </div>
+      </div>
+    </transition>
+    
   </div>
 </template>
 
 <script>
   import {getCode,loginOrRegister,loginOrRegisterByUsername} from '../../../src/network/login'
   import Toast from '../../../src/components/common/toast/Toast'
+  import BeforeLogin from './BeforeLogin'
   export default {
     name: 'Login',
     components: {
-      Toast
+      Toast,
+      BeforeLogin
     },
     data() {
       return {
+        isShow: false,
         isMode: true, // true 表示短信登录，false 表示密码登录
         isPwdShow: false,
         codeTime: 60, // 记录重新发送验证码的时间
@@ -108,6 +117,8 @@
           getCode(this.phone).then(res => {
             console.log(res)
             this.getToast(res.message,'您的验证码为:')
+          }).catch(err => {
+            console.log(err)
           })
         }
       },
@@ -115,6 +126,7 @@
       getSvgImage() {
         this.$refs.captcha.src = 'http://localhost:3000/captcha/svg?time=' + new Date()
       },
+      // 点击登录按钮之后进行的操作
       submitLogin() {
         var data = {
           phone: this.phone,
@@ -128,8 +140,9 @@
           loginOrRegister(data).then(res => {
             if(res.success_code == 200) {
               // 注册或登录成功则让登录组件隐藏
-              console.log(res.userInfo)
+              $this.$store.commit('setToken', res.token)
               $this.$store.commit('setUserInfo',{userInfo:res.userInfo})
+              this.$router.replace('/profile')
               // $this.$router.replace('/profile')
             } else if(res.err_code == 500) {
             }
@@ -138,8 +151,10 @@
           loginOrRegisterByUsername(data).then(res => {
             if(res.success_code == 200) {
               // 注册或登录成功则让登录组件隐藏
-              console.log(res.userInfo)
+              console.log(res)
+              $this.$store.commit('setToken', res.token)
               $this.$store.commit('setUserInfo',{userInfo:res.userInfo})
+              this.$router.replace('/profile')
             } else if(res.err_code == 1 || res.err_code == 0) {
               // 如果密码或验证码错误，则重新设置一个验证码，并把密码清空
               this.getSvgImage()
@@ -160,7 +175,13 @@
         setTimeout(() => {
           this.isToastShow = false
         },3000)
+      },
+      loginClick() {
+        this.isShow = true
       }
+    },
+    created() {
+      this.$store.commit('signOut')
     }
   }
 </script>
@@ -171,6 +192,16 @@
     height: 98vh;
     position: fixed;
     background-color: #fff;
+  }
+  .login {
+    bottom: 0;
+  }
+  .login-enter-active {
+    transition: all .3s;
+    bottom: 0;
+  }
+  .login-enter {
+    bottom: -98vh;
   }
   .main {
     padding-top: 60px;

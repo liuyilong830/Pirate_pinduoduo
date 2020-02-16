@@ -1,11 +1,21 @@
 export default {
   setUserInfo(state,payload) {
-    window.sessionStorage.setItem('userInfo',JSON.stringify(payload.userInfo))
+    window.localStorage.setItem('userInfo',JSON.stringify(payload.userInfo))
     state.userInfo = payload.userInfo
   },
-  setDateTime(state,payload) {
+  setBaseInfo(state,payload) {
     var obj = Object.assign({},state.userInfo,payload)
-    window.sessionStorage.setItem('userInfo',JSON.stringify(obj))
+    window.localStorage.setItem('userInfo',JSON.stringify(obj))
     state.userInfo = obj
+  },
+  setToken(state,token) {
+    window.localStorage.setItem('token',token)
+    state.token = token
+  },
+  signOut(state) {
+    state.userInfo = null
+    state.token = null
+    window.localStorage.removeItem('userInfo')
+    window.localStorage.removeItem('token')
   }
 }

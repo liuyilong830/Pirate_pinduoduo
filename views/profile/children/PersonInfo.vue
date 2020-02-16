@@ -14,7 +14,7 @@
         <span class="title">手机号</span>
         <span>{{ getPhone }}</span>
       </div>
-      <div class="item">
+      <div class="item" @click="setSexShow">
         <span class="title">性别</span>
         <span>{{ getSex }}</span>
       </div>
@@ -35,8 +35,12 @@
         <span>{{ userInfo.uid }}</span>
       </div>
     </div>
+    <div class="back">
+      <button class="btn" @click="backClick">&nbsp;返 回&nbsp;</button>
+    </div>
 
     <birthday-popup v-model='popupVisible' v-bind.sync='date' @confirm='handleConfirm' v-if="popupVisible"></birthday-popup>
+    <sex-popup v-model="sexPop" :sex.sync='userInfo.sex' @confirmSex='handleConfirmSex' v-show="sexPop"></sex-popup>
   </div>
 </template>
 
@@ -44,15 +48,18 @@
   import {mapGetters} from 'vuex'
   import {getUser,setUserBaseInfo} from '../../../src/network/profile'
   import BirthdayPopup from '../../../src/components/common/popup/BirthdayPopup'
+  import SexPopup from '../../../src/components/common/popup/SexPopup'
   export default {
     name: 'PersonInfo',
     components: {
-      BirthdayPopup
+      BirthdayPopup,
+      SexPopup
     },
     data() {
       return {
         userInfo: {},
-        popupVisible: false,
+        popupVisible: false, // 控制生日选择组件的打开和关闭
+        sexPop : false, // 控制性别选择组件的打开和关闭
         date: {
           year: null,
           month: null,
@@ -99,6 +106,9 @@
       }
     },
     methods: {
+      setSexShow() {
+        this.sexPop = true
+      },
       // 点击生日部分，展示生日列表选择组件
       setBirthday() {
         this.popupVisible = true
@@ -110,11 +120,21 @@
         setUserBaseInfo({date}).then(res => {
           // console.log(res.message)
         })
-        this.$store.commit('setDateTime',{date})
+        this.$store.commit('setBaseInfo',{date})
+      },
+      // 选择性别之后的回调函数
+      handleConfirmSex(sex) {
+        setUserBaseInfo({sex}).then(res => {
+          // console.log(res.message)
+        })
+        this.$store.commit('setBaseInfo',{sex})
       },
       // 在生日列表选择组件选择玩日期后将得到的日期对象转换为指定的格式输出
       changeDate(date) {
         return `${date.year}-${date.month}-${date.day}`
+      },
+      backClick() {
+        this.$router.replace('/profile')
       }
     },
     created() {
@@ -122,7 +142,7 @@
       /* getUser().then(res => {
         this.userInfo = res.message
       }) */
-      this.userInfo = JSON.parse(window.sessionStorage.getItem('userInfo'))
+      this.userInfo = JSON.parse(window.localStorage.getItem('userInfo'))
     }
   }
 </script>
@@ -168,5 +188,19 @@
   .item .title {
     font-size: 15px;
     color: #383838;
+  }
+  .back {
+    margin-top: 15px;
+    text-align: center;
+  }
+  .btn {
+    width: 95vw;
+    height: 40px;
+    background-color: orange;
+    font-size: 17px;
+    line-height: 40px;
+    border: 1px solid #fff;
+    border-radius: 6px;
+    color: #fff;
   }
 </style>

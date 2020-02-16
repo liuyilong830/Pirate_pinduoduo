@@ -3,7 +3,7 @@
     <keep-alive exclude="Detail">
       <router-view></router-view>
     </keep-alive>
-    <main-tab-bar></main-tab-bar>
+    <main-tab-bar v-show="$route.meta.showTabBar"></main-tab-bar>
   </div>
 </template>
 
@@ -16,11 +16,12 @@
       MainTabBar
     },
     created() {
-      loginUser().then(res => {
+      /* loginUser().then(res => {
         if(res.success_code === 200) {
+          this.$store.commit('setToken', res.token)
           this.$store.commit('setUserInfo',{userInfo: res.message})
         }
-      })
+      }) */
     }
   }
 </script>

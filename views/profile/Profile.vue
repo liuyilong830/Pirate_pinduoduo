@@ -1,13 +1,6 @@
 <template>
-  <div>
-    <div v-if="!showLoginComp">
-      <before-login @loginClick='loginClick' />
-      <transition name="login">
-        <login v-if="isShow" class="login"></login>
-      </transition>
-    </div>
-    
-    <b-scroll v-else :probeType='3' :pullUpLoad='true' class="wrapper_profile">
+  <div class="profile">
+    <b-scroll :probeType='3' :pullUpLoad='true' class="wrapper_profile">
       <!-- 顶部基本信息 -->
       <base-info></base-info>
       <!-- 订单版块 -->
@@ -17,7 +10,6 @@
       <!-- 其他版块 -->
       <other></other>
     </b-scroll>
-
   </div>
 </template>
 
@@ -47,15 +39,6 @@
         isShow: false,
         isLoginShow: true
       }
-    },
-    computed: {
-      ...mapGetters(['showLoginComp'])
-    },
-    methods: {
-      // 登录的时候先展示蒙版
-      loginClick() {
-        this.isShow = true
-      }
     }
   }
 </script>
@@ -63,15 +46,5 @@
 <style scoped>
   .wrapper_profile {
     height: calc(100vh - 49px);
-  }
-  .login {
-    bottom: 0;
-  }
-  .login-enter-active {
-    transition: all .3s;
-    bottom: 0;
-  }
-  .login-enter {
-    bottom: -98vh;
   }
 </style>

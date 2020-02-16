@@ -4,6 +4,9 @@ const SCRUD = require('./CRUD/searchCRUD')
 const LoginCRUD = require('./CRUD/login')
 const svgCaptcha = require('svg-captcha')
 const sendCode = require('./sendCode')
+const jwt = require('jsonwebtoken')
+let payload = null
+let token = ''
 
 const router = express.Router()
 
@@ -96,7 +99,6 @@ router.get('/hot/goods' , (req,res) => {
     })
   }
 })
-
 // 请求指定id的商品详情数据
 router.get('/goods/item/:id', (req,res) => {
   var message = {}
@@ -223,9 +225,19 @@ router.post('/api/login/code' , (req,res) => {
         req.session.mode = true
         success[0].mode = req.session.mode
         req.session.userId = success[0].uid
+        payload = {
+          uid: success[0].uid,
+          username: success[0].username,
+          phone: success[0].phone
+        }
+        token = jwt.sign(payload,'liuyilong',{
+          expiresIn: '12h',
+          issuer: 'coderliu'
+        })
         res.json({
           success_code: 200,
           message: '即将跳转登录...',
+          token: token,
           userInfo: success[0]
         })
       })
@@ -235,16 +247,27 @@ router.post('/api/login/code' , (req,res) => {
           message: '服务器繁忙,请稍后再试...'
         })
       })
+    } else {
+      // 存在该用户，则直接登录
+      req.session.mode = true
+      req.session.userId = data[0].uid
+      data[0].mode = req.session.mode
+      payload = {
+        uid: data[0].uid,
+        username: data[0].username,
+        phone: data[0].phone
+      }
+      token = jwt.sign(payload,'liuyilong',{
+        expiresIn: '12h',
+        issuer: 'coderliu'
+      })
+      res.json({
+        success_code: 200,
+        message: '即将跳转登录...',
+        token,
+        userInfo: data[0]
+      })
     }
-    // 存在该用户，则直接登录
-    req.session.mode = true
-    req.session.userId = data[0].uid
-    data[0].mode = req.session.mode
-    res.json({
-      success_code: 200,
-      message: '即将跳转登录...',
-      userInfo: data[0]
-    })
   }).catch(err => {
     console.log(err)
   })
@@ -271,9 +294,19 @@ router.post('/api/login/imgcode' , (req,res) => {
         req.session.mode = false
         success[0].mode = req.session.mode
         req.session.userId = success[0].uid
+        payload = {
+          uid: success[0].uid,
+          username: success[0].username,
+          phone: success[0].phone
+        }
+        token = jwt.sign(payload,'liuyilong',{
+          expiresIn: '12h',
+          issuer: 'coderliu'
+        })
         res.json({
           success_code: 200,
           message: '即将跳转登录...',
+          token,
           userInfo: success[0]
         })
       })
@@ -283,57 +316,45 @@ router.post('/api/login/imgcode' , (req,res) => {
           message: '服务器繁忙,请稍后再试...'
         })
       })
-    }
-    // 有用户名，判断密码是否正确
-    LoginCRUD.getUserByPwd(req.body.password).then(success => {
-      // 如果success长度为0代表密码错误
-      if(success.length == 0) {
-        return res.json({
-          err_code: 1,
-          message: '密码错误,请重试...'
+    } else {
+      // 有用户名，判断密码是否正确
+      LoginCRUD.getUserByPwd(req.body.password).then(success => {
+        // 如果success长度为0代表密码错误
+        if(success.length == 0) {
+          return res.json({
+            err_code: 1,
+            message: '密码错误,请重试...'
+          })
+        }
+        // 密码正确
+        req.session.mode = false
+        success[0].mode = req.session.mode
+        req.session.userId = success[0].uid
+        payload = {
+          uid: success[0].uid,
+          username: success[0].username,
+          phone: success[0].phone
+        }
+        token = jwt.sign(payload,'liuyilong',{
+          expiresIn: '1day'
         })
-      }
-      // 密码正确
-      req.session.mode = false
-      success[0].mode = req.session.mode
-      req.session.userId = success[0].uid
-      res.json({
-        success_code: 200,
-        message: '即将跳转登录...',
-        userInfo: success[0]
+        res.json({
+          success_code: 200,
+          message: '即将跳转登录...',
+          token,
+          userInfo: success[0]
+        })
+      }).catch(err => {
+        res.json({
+          err_code: 500,
+          message: err.message
+        })
       })
-    }).catch(err => {
-      res.json({
-        err_code: 500,
-        message: '服务器繁忙,请稍后再试...'
-      })
-    })
+    }
   }).catch(err => {
     res.json({
       err_code: 500,
-      message: '服务器繁忙,请稍后再试...'
-    })
-  })
-})
-// 刷新后保持状态
-router.get('/api/user_info' , (req,res) => {
-  if(!req.session.userId) {
-    return res.json({
-      err_code: 2,
-      message: '请先登录...'
-    })
-  }
-  LoginCRUD.getUserByUserId(req.session.userId).then(data => {
-    // 进入else之后说明存在该用户，则需要将对象传给组件中用以展示
-    data[0].mode = req.session.mode
-    res.json({
-      success_code: 200,
-      message: data[0]
-    })
-  }).catch(err => {
-    res.json({
-      err_code: 500,
-      message: '请求失败...'
+      message: err.message
     })
   })
 })
@@ -353,17 +374,61 @@ router.get('/user_info' , (req,res) => {
 })
 // 设置用户个人信息
 router.post('/user_baseInfo' , (req,res) => {
-  LoginCRUD.setUserBirthday(req.session.userId , req.body.date).then(data => {
+  if(req.body.date) {
+    LoginCRUD.setUserBirthday(req.session.userId , req.body.date).then(data => {
+      res.json({
+        success_code: 200,
+        message: '修改成功...'
+      })
+    }).catch(err => {
+      res.json({
+        err_code: 500,
+        message: err.message
+      })
+    })
+  } else if(req.body.sex) {
+    LoginCRUD.setUserSex(req.session.userId , req.body.sex).then(data => {
+      res.json({
+        success_code: 200,
+        message: '修改成功...'
+      })
+    }).catch(err => {
+      res.json({
+        err_code: 500,
+        message: err.message
+      })
+    })
+  }
+  
+})
+// 验证token值是否相等
+router.post('/api/token' , (req,res) => {
+  var userToken = req.body.token
+  // 验证token
+  /* jwt.verify(userToken,'liuyilong',(error,decoded) => {
+    if(error) {
+      return res.json({
+        err_code: 0,
+        message: '验证失败'
+      })
+    }
+    console.log(decoded)
     res.json({
       success_code: 200,
-      message: '修改成功...'
+      message: '验证成功'
     })
-  }).catch(err => {
+  }) */
+  if(token == userToken) {
     res.json({
-      err_code: 500,
-      message: err.message
+      success_code: 200,
+      message: '验证成功'
     })
-  })
+  } else {
+    return res.json({
+      err_code: 0,
+      message: '验证失败'
+    })
+  }
 })
 
 module.exports = router

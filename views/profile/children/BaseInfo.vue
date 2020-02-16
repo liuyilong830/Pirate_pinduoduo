@@ -53,8 +53,8 @@
       }
     },
     created() {
-      // this.userInfo = this.getUserInfo
-      this.userInfo = JSON.parse(window.sessionStorage.getItem('userInfo'))
+      this.userInfo = this.getUserInfo
+      // this.userInfo = JSON.parse(window.localStorage.getItem('userInfo'))
     }
   }
 </script>
