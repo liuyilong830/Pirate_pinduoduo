@@ -5,13 +5,16 @@
 ## Build Setup
 
 ``` bash
-# install dependencies
+# 通过该命令将依赖包全部导入
 npm install
 
-# serve with hot reload at localhost:8080
+# 运行服务
 npm run dev
 
-# build for production with minification
+# 因为是前后端都是自己写的，所以需要启动mysql数据库服务（cd到src下的db目录中运行下面命令）
+nodemon app.js
+
+# 项目打包
 npm run build
 
 # build for production and view the bundle analyzer report
