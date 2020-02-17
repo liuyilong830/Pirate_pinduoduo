@@ -83,3 +83,13 @@ exports.setUserSex = function (uid, value) {
     })
   })
 }
+// 根据用户的id修改个性签名
+exports.setUserSign = function (uid, value) {
+  return new Promise((resolve,reject) => {
+    var sql = 'update users set signature=? where uid=?'
+    connection.query(sql, [value,uid] , (error,data) => {
+      if(error) reject(error)
+      resolve(data)
+    })
+  })
+}

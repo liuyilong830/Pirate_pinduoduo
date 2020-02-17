@@ -398,6 +398,18 @@ router.post('/user_baseInfo' , (req,res) => {
         message: err.message
       })
     })
+  } else if(req.body.signature) {
+    LoginCRUD.setUserSign(req.session.userId , req.body.signature).then(data => {
+      res.json({
+        success_code: 200,
+        message: '修改成功...'
+      })
+    }).catch(err => {
+      res.json({
+        err_code: 500,
+        message: err.message
+      })
+    })
   }
   
 })

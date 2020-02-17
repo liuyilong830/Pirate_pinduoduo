@@ -20,15 +20,15 @@
       </div>
       <div class="item">
         <span class="title">地区</span>
-        <span>{{ getRegion }}</span>
+        <span>{{ getAddress }}</span>
       </div>
       <div class="item" @click="setBirthday">
         <span class="title">生日</span>
         <span>{{ getBirthday }}</span>
       </div>
-      <div class="item">
+      <div class="item" @click="setSignature">
         <span class="title">个性签名</span>
-        <span>{{ getRegion }}</span>
+        <span>{{ getSignature }}</span>
       </div>
       <div class="item">
         <span class="title">多多号</span>
@@ -41,6 +41,7 @@
 
     <birthday-popup v-model='popupVisible' v-bind.sync='date' @confirm='handleConfirm' v-if="popupVisible"></birthday-popup>
     <sex-popup v-model="sexPop" :sex.sync='userInfo.sex' @confirmSex='handleConfirmSex' v-show="sexPop"></sex-popup>
+    <signature-popup v-model="signaturePop" :signature.sync='userInfo.signature' @confirmSign='handleConfirmSign' v-if="signaturePop"/>
   </div>
 </template>
 
@@ -49,17 +50,20 @@
   import {getUser,setUserBaseInfo} from '../../../src/network/profile'
   import BirthdayPopup from '../../../src/components/common/popup/BirthdayPopup'
   import SexPopup from '../../../src/components/common/popup/SexPopup'
+  import SignaturePopup from '../../../src/components/common/popup/SignaturePopup'
   export default {
     name: 'PersonInfo',
     components: {
       BirthdayPopup,
-      SexPopup
+      SexPopup,
+      SignaturePopup
     },
     data() {
       return {
         userInfo: {},
         popupVisible: false, // 控制生日选择组件的打开和关闭
         sexPop : false, // 控制性别选择组件的打开和关闭
+        signaturePop: false, // 控制地区选择组件的打开和关闭
         date: {
           year: null,
           month: null,
@@ -76,9 +80,13 @@
       getNickName() {
         return this.userInfo.username? this.userInfo.username : '未设置'
       },
-      // 展示个信签名
-      getRegion() {
-        return this.userInfo.region? this.userInfo.region : '无'
+      // 展示地区
+      getAddress() {
+        return this.userInfo.address? this.userInfo.address : '未设置'
+      },
+      // 展示个性签名
+      getSignature() {
+        return this.userInfo.signature? this.userInfo.signature : '无'
       },
       // 展示手机号
       getPhone() {
@@ -106,8 +114,12 @@
       }
     },
     methods: {
+      // 点击性别区域展示性别选择组件
       setSexShow() {
         this.sexPop = true
+      },
+      setSignature() {
+        this.signaturePop = true
       },
       // 点击生日部分，展示生日列表选择组件
       setBirthday() {
@@ -135,6 +147,12 @@
       },
       backClick() {
         this.$router.replace('/profile')
+      },
+      handleConfirmSign(signature) {
+        setUserBaseInfo({signature}).then(res => {
+          console.log(res)
+        })
+        this.$store.commit('setBaseInfo',{signature})
       }
     },
     created() {
