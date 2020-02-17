@@ -13,3 +13,12 @@ export function setUserBaseInfo(data) {
     data
   })
 }
+
+export function getUserByPhone(phone) {
+  return request({
+    url: '/user_phone',
+    params: {
+      phone
+    }
+  })
+}

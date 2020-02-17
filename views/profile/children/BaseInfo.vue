@@ -37,10 +37,16 @@
       ...mapGetters(['getUserInfo']),
       // 将手机号转换成指定格式
       getFilterPhone() {
-        if(!this.userInfo.mode) {
+        /* if(!this.userInfo.mode) {
           return this.userInfo.username
         }else {
           // 15073382436 => 150****2436
+          var str = this.userInfo.phone.substr(3,4)
+          return this.userInfo.phone.replace(str,'****')
+        } */
+        if(this.userInfo.username) {
+          return this.userInfo.username
+        } else {
           var str = this.userInfo.phone.substr(3,4)
           return this.userInfo.phone.replace(str,'****')
         }

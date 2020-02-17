@@ -145,6 +145,7 @@
               this.$router.replace('/profile')
               // $this.$router.replace('/profile')
             } else if(res.err_code == 500) {
+              console.log(res)
             }
           })
         } else {

@@ -10,7 +10,7 @@
         <span class="title">昵称</span>
         <span>{{ getNickName }}</span>
       </div>
-      <div class="item">
+      <div class="item" @click="setPhoneShow">
         <span class="title">手机号</span>
         <span>{{ getPhone }}</span>
       </div>
@@ -18,8 +18,8 @@
         <span class="title">性别</span>
         <span>{{ getSex }}</span>
       </div>
-      <div class="item">
-        <span class="title">地区</span>
+      <div class="item" @click="setAddress">
+        <span class="title">住址</span>
         <span>{{ getAddress }}</span>
       </div>
       <div class="item" @click="setBirthday">
@@ -42,6 +42,8 @@
     <birthday-popup v-model='popupVisible' v-bind.sync='date' @confirm='handleConfirm' v-if="popupVisible"></birthday-popup>
     <sex-popup v-model="sexPop" :sex.sync='userInfo.sex' @confirmSex='handleConfirmSex' v-show="sexPop"></sex-popup>
     <signature-popup v-model="signaturePop" :signature.sync='userInfo.signature' @confirmSign='handleConfirmSign' v-if="signaturePop"/>
+    <address-popup v-model="addressPop" v-if="addressPop" v-bind.sync='address' @confilmAddress='handleConfirmAddress'></address-popup>
+    <phone-popup v-model="phonePop" v-if="phonePop" :phone.sync='userInfo.phone' @confirmPhone='handleConfirmPhone'></phone-popup>
   </div>
 </template>
 
@@ -51,12 +53,16 @@
   import BirthdayPopup from '../../../src/components/common/popup/BirthdayPopup'
   import SexPopup from '../../../src/components/common/popup/SexPopup'
   import SignaturePopup from '../../../src/components/common/popup/SignaturePopup'
+  import addressPopup from '../../../src/components/common/popup/addressPopup'
+  import PhonePopup from '../../../src/components/common/popup/PhonePopup'
   export default {
     name: 'PersonInfo',
     components: {
       BirthdayPopup,
       SexPopup,
-      SignaturePopup
+      SignaturePopup,
+      addressPopup,
+      PhonePopup
     },
     data() {
       return {
@@ -64,10 +70,17 @@
         popupVisible: false, // 控制生日选择组件的打开和关闭
         sexPop : false, // 控制性别选择组件的打开和关闭
         signaturePop: false, // 控制地区选择组件的打开和关闭
+        addressPop: false,
+        phonePop: false,
         date: {
           year: null,
           month: null,
           day: null
+        },
+        address: {
+          province: null,
+          city: null,
+          county: null
         }
       }
     },
@@ -82,6 +95,9 @@
       },
       // 展示地区
       getAddress() {
+        if(this.address.county) {
+          return this.address.county !== '请选择'? `${this.address.province}-${this.address.city}-${this.address.county}` : '未设置'
+        }
         return this.userInfo.address? this.userInfo.address : '未设置'
       },
       // 展示个性签名
@@ -145,14 +161,39 @@
       changeDate(date) {
         return `${date.year}-${date.month}-${date.day}`
       },
+      // 返回到 Profile组件的方法
       backClick() {
         this.$router.replace('/profile')
       },
+      // 在设置完个性签名之后的回调函数
       handleConfirmSign(signature) {
         setUserBaseInfo({signature}).then(res => {
           console.log(res)
         })
         this.$store.commit('setBaseInfo',{signature})
+      },
+      setAddress() {
+        this.addressPop = true
+      },
+      // 选择地区之后的回调函数
+      handleConfirmAddress(address) {
+        if(address.includes('请选择')) {
+          this.address.province = this.address.city = this.address.county = null
+          return
+        }
+        setUserBaseInfo({address}).then(res => {
+          console.log(res)
+        })
+        this.$store.commit('setBaseInfo',{address})
+      },
+      setPhoneShow() {
+        this.phonePop = true
+      },
+      handleConfirmPhone(phone) {
+        setUserBaseInfo({phone}).then(res => {
+          console.log(res)
+        })
+        this.$store.commit('setBaseInfo',{phone})
       }
     },
     created() {
@@ -220,5 +261,8 @@
     border: 1px solid #fff;
     border-radius: 6px;
     color: #fff;
+  }
+  .address {
+    background-color: #fff;
   }
 </style>

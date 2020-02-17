@@ -410,8 +410,48 @@ router.post('/user_baseInfo' , (req,res) => {
         message: err.message
       })
     })
+  } else if(req.body.address) {
+    LoginCRUD.setUserAddress(req.session.userId , req.body.address).then(data => {
+      res.json({
+        success_code: 200,
+        message: '修改成功...'
+      })
+    }).catch(err => {
+      res.json({
+        err_code: 500,
+        message: err.message
+      })
+    })
+  } else if(req.body.phone) {
+    LoginCRUD.setUserPhone(req.session.userId , req.body.phone).then(data => {
+      res.json({
+        success_code: 200,
+        message: '修改成功...'
+      })
+    }).catch(err => {
+      res.json({
+        err_code: 500,
+        message: err.message
+      })
+    })
   }
   
+})
+// 根据手机号查询是否存在该号码被注册
+router.get('/user_phone' , (req,res) => {
+  LoginCRUD.getUserByPhone(req.query.phone).then(data => {
+    if(data.length == 0) {
+      res.json({
+        success_code: 200,
+        message: '该号码未被注册，请获取验证码...'
+      })
+    } else {
+      res.json({
+        err_code: 1,
+        message: '该号码已经被注册...'
+      })
+    }
+  })
 })
 // 验证token值是否相等
 router.post('/api/token' , (req,res) => {

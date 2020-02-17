@@ -93,3 +93,23 @@ exports.setUserSign = function (uid, value) {
     })
   })
 }
+// 根据用户的id修改地址信息
+exports.setUserAddress = function (uid, value) {
+  return new Promise((resolve,reject) => {
+    var sql = 'update users set address=? where uid=?'
+    connection.query(sql, [value,uid] , (error,data) => {
+      if(error) reject(error)
+      resolve(data)
+    })
+  })
+}
+// 根据用户的id修改地址信息
+exports.setUserPhone = function (uid, value) {
+  return new Promise((resolve,reject) => {
+    var sql = 'update users set phone=? where uid=?'
+    connection.query(sql, [value,uid] , (error,data) => {
+      if(error) reject(error)
+      resolve(data)
+    })
+  })
+}
