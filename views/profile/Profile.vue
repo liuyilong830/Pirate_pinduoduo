@@ -33,12 +33,6 @@
       OrderInfo,
       CustomerService,
       Other
-    },
-    data() {
-      return {
-        isShow: false,
-        isLoginShow: true
-      }
     }
   }
 </script>

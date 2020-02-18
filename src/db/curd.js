@@ -118,3 +118,45 @@ exports.getCouponPopUp = function() {
     })
   })
 }
+// 根据sid获取该商品的尺寸的所有名称和对应的标题文字
+exports.getPaySnaemById = function(sid) {
+  var sql = `
+    select DISTINCT s.sname, p.i_title
+    from pay_price p inner join size s on p.iid = s.iid
+    where p.sid = ?
+  `
+  return new Promise((resolve,reject) => {
+    connection.query(sql, sid , function (error,data) {
+      if(error) reject(error)
+      resolve(data)
+    })
+  })
+}
+// 根据sid获取该商品的所有种类的名称和对应的标题文字
+exports.getPayTnameById = function(sid) {
+  var sql = `
+    select distinct t.tname, p.t_title
+    from pay_price p inner join type t on p.tid = t.tid
+    where p.sid = ?
+  `
+  return new Promise((resolve,reject) => {
+    connection.query(sql, sid , function (error,data) {
+      if(error) reject(error)
+      resolve(data)
+    })
+  })
+}
+// 根据sid获取该商品对应尺寸和种类的各种价格数据
+exports.getPayPriceById = function (sid) {
+  var sql = `
+    select s.sname, t.tname, p.new_price, p.old_price, p.exp_price
+    from size s inner join pay_price p on s.iid = p.iid inner join type t on p.tid = t.tid
+    where p.sid = ?
+  `
+  return new Promise((resolve,reject) => {
+    connection.query(sql, sid , function (error,data) {
+      if(error) reject(error)
+      resolve(data)
+    })
+  })
+}

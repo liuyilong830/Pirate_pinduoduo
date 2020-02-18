@@ -34,6 +34,12 @@
         default() {
           return {}
         }
+      },
+      payData: {
+        type: Object,
+        default() {
+          return {}
+        }
       }
     }
   }

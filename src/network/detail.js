@@ -6,10 +6,20 @@ export function getItemDetail(id) {
   })
 }
 
+export function getPayData(sid) {
+  return request({
+    url: '/detail/pay_data',
+    params: {
+      sid
+    }
+  })
+}
+
 export class itemInformation {
   constructor (itemDetail) {
     this.shop_img = itemDetail.shop_img;
     this.price = itemDetail.price;
+    this.old_price = itemDetail.old_price;
     this.title = itemDetail.title;
     this.welfare = itemDetail.welfare;
   }

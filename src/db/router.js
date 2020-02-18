@@ -482,5 +482,52 @@ router.post('/api/token' , (req,res) => {
     })
   }
 })
+// 获取购买商品的种类数据
+router.get('/detail/pay_data' , (req,res) => {
+  var message = {}
+  var sid = req.query.sid
+  Promise.all([
+    CRUD.getPaySnaemById(sid),
+    CRUD.getPayTnameById(sid),
+    CRUD.getPayPriceById(sid)
+  ]).then(data => {
+    message.size = {
+      title: data[0][0].i_title,
+      sname: []
+    }
+    data[0].forEach((value,key) => {
+      message.size.sname.push(value.sname)
+    })
+    message.type = {
+      title: data[1][0].t_title,
+      tname: []
+    }
+    data[1].forEach((value,key) => {
+      message.type.tname.push(value.tname)
+    })
+    var priceList = []
+    var k = 0
+    for(var i = 0; i < message.size.sname.length; i++) {
+      priceList[i] = []
+      for(var j = 0; j < message.type.tname.length; j++) {
+        var {new_price,old_price,exp_price} = data[2][k]
+        priceList[i].push({new_price,old_price,exp_price})
+        k++
+      }
+    }
+    message.priceList = priceList
+
+    res.json({
+      success_code: 200,
+      message
+    })
+  }).catch(err => {
+    console.log(err)
+    res.json({
+      err_code: 500,
+      message: '服务器忙碌，请稍后再试...'
+    })
+  })
+})
 
 module.exports = router

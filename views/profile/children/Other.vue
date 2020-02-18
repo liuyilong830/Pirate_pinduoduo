@@ -40,7 +40,7 @@
       <i class="iconfont icon-kefu"></i>
       <span>官方客服</span>
     </div>
-    <div class="icon_item">
+    <div class="icon_item" @click="openSettings">
       <i class="iconfont icon-shezhi"></i>
       <span>设置</span>
     </div>
@@ -50,6 +50,11 @@
 <script>
   export default {
     name: 'Other',
+    methods: {
+      openSettings() {
+        this.$router.push('/settings')
+      }
+    }
   }
 </script>
 

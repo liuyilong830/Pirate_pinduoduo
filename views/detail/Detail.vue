@@ -35,7 +35,7 @@
     <!-- 回到顶部按钮 -->
     <back-top v-show="isShow" @click.native="backTopClick"></back-top>
     <!-- BottomBar 组件版块 -->
-    <bottom-bar :prices='prices'></bottom-bar>
+    <bottom-bar :prices='prices' :payData='payData'></bottom-bar>
     <!-- welfare组件弹出层 -->
     <pop-up :change='change' @closePopUp='closePopUp' :flag='flag' :content='flagContent'></pop-up>
   </div>
@@ -53,7 +53,7 @@
   import BackTop from '../../src/components/common/backTop/BackTop'
   import BottomBar from '../../src/components/content/bottomBar/BottomBar'
   import PopUp from '../../src/components/common/popup/PopUp'
-  import {getItemDetail,itemInformation,itemEvaluation,ShopInfo,DescribeInfo,BSeller} from '../../src/network/detail'
+  import {getItemDetail,itemInformation,itemEvaluation,ShopInfo,DescribeInfo,BSeller,getPayData} from '../../src/network/detail'
   export default {
     name: 'Detail',
     components: {
@@ -87,7 +87,8 @@
         change: false,
         flag: false, // 记录是优惠卷的点击还是福利的点击
         welfPopInfo: [],
-        couPopInfo: []
+        couPopInfo: [],
+        payData: {} // 保存商品种类，尺寸，以及对应金额的数据
       }
     },
     computed: {
@@ -160,6 +161,11 @@
         // 将拼单价格和单独购买的价格保存在一个对象中
         this.prices.expensive_price = data.itemDetail.expensive_price
         this.prices.new_price = data.itemDetail.price
+      })
+      // 获取支付金额等数据
+      getPayData(this.id).then(res => {
+        // console.log(res)
+        this.payData = res.message
       })
     },
     updated() {
