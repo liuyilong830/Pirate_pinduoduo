@@ -8,7 +8,9 @@ import getters from './getters'
 
 const state = {
   userInfo: JSON.parse(window.localStorage.getItem('userInfo')),
-  token: window.localStorage.getItem('token')
+  token: window.localStorage.getItem('token'),
+  priceInfo: JSON.parse(window.localStorage.getItem('priceInfo')),
+  shopInfo: JSON.parse(window.localStorage.getItem('shopInfo'))
 }
 
 const store = new Vuex.Store({

@@ -17,5 +17,15 @@ export default {
     state.token = null
     window.localStorage.removeItem('userInfo')
     window.localStorage.removeItem('token')
+    window.localStorage.removeItem('priceInfo')
+    window.localStorage.removeItem('shopInfo')
+  },
+  setGoodsPrice(state,payload) {
+    state.priceInfo = payload
+    window.localStorage.setItem('priceInfo',JSON.stringify(payload))
+  },
+  setShopInfo(state,payload) {
+    state.shopInfo = payload
+    window.localStorage.setItem('shopInfo',JSON.stringify(payload))
   }
 }

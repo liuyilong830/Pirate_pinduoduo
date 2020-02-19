@@ -12,6 +12,7 @@ const Profile = () => import('../../views/profile/Profile.vue')
 const Login = () => import('../../views/profile/children/Login.vue')
 const PersonInfo = () => import('../../views/profile/children/PersonInfo.vue')
 const Settings = () => import('../../views/setting/Settings.vue')
+const PayMent = () => import('../../views/pay/PayMent.vue')
 
 const Hot = () => import('../../views/home/chirdren/Hot.vue')
 const Man = () => import('../../views/home/chirdren/Man.vue')
@@ -66,7 +67,8 @@ const routes = [
   { path: '/detail/:id' , component: Detail},
   { path: '/login' , component: Login},
   { path: '/person_info' , component: PersonInfo},
-  { path: '/settings' , component: Settings}
+  { path: '/settings' , component: Settings},
+  { path: '/payment' , component: PayMent},
 ]
 
 const router = new Router({
@@ -77,7 +79,7 @@ router.beforeEach((to , from , next) => {
   /* if(to.path == '/profile' && !tokenStr) {
     return next('/login')
   } */
-  if(to.path == '/person_info' || to.path == '/profile') {
+  if(to.path == '/person_info' || to.path == '/profile' || to.path == '/payment') {
     getToken(tokenStr).then(res => {
       // console.log(res)
       if(res.success_code == 200) {

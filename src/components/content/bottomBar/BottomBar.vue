@@ -14,32 +14,45 @@
         <span>客服</span>
       </div>
     </div>
-    <div class="expensive_price">
+    <div class="expensive_price" @click="openPayComp(false)">
       <span>￥{{ prices.expensive_price }}</span>
       <span>单独购买</span>
     </div>
-    <div class="spell_list">
+    <div class="spell_list" @click="openPayComp(true)">
       <span>￥{{ prices.new_price }}</span>
       <span>发起拼单</span>
     </div>
+
+    <price-popup v-model="isShow" v-bind="$attrs" :flag='flag' v-show="isShow"></price-popup>
   </div>
 </template>
 
 <script>
+  import PricePopup from '../popup/PricePopup'
   export default {
     name: 'BottomBar',
+    components: {
+      PricePopup
+    },
     props: {
       prices: {
         type: Object,
         default() {
           return {}
         }
-      },
-      payData: {
-        type: Object,
-        default() {
-          return {}
-        }
+      }
+    },
+    data() {
+      return {
+        isShow: false,
+        payDataInfo: {},
+        flag: false
+      }
+    },
+    methods: {
+      openPayComp(flag) {
+        this.flag = flag
+        this.isShow = true
       }
     }
   }
@@ -92,6 +105,5 @@
     display: flex;
     flex-direction: column;
     justify-content: space-around;
-    padding-bottom: 5px;
   }
 </style>

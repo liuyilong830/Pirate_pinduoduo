@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if='Object.keys(swiperList).length !== 0'>
     <b-scroll :probeType='3' :pullUpLoad='true' @positionY='positionY' class="wrapper_detail" ref="wrapper_detail">
       <div class="detail_top">
         <div class="swiper">
@@ -35,7 +35,7 @@
     <!-- 回到顶部按钮 -->
     <back-top v-show="isShow" @click.native="backTopClick"></back-top>
     <!-- BottomBar 组件版块 -->
-    <bottom-bar :prices='prices' :payData='payData'></bottom-bar>
+    <bottom-bar :prices='prices' :payData='payData' :oneImg='swiperList[0].images'></bottom-bar>
     <!-- welfare组件弹出层 -->
     <pop-up :change='change' @closePopUp='closePopUp' :flag='flag' :content='flagContent'></pop-up>
   </div>
@@ -138,7 +138,6 @@
       // 根据id请求特定的详情页数据
       getItemDetail(this.id).then(res => {
         var data = res.message
-        // console.log(res.message)
         // 获取详情页的轮播图数据
         this.swiperList = data.swiperList
         // 获取详情页的其他数据
@@ -168,8 +167,19 @@
         this.payData = res.message
       })
     },
-    updated() {
-      // this.$refs.wrapper_detail.scroll.refresh()
+    beforeRouteLeave (to, from, next) {
+      if(to.path === '/payment') {
+        var shopInfo = {
+          title: this.iteminfo.title,
+          welfare: this.iteminfo.welfare,
+          coupon: this.coupon,
+          shop_name: this.shopinfo.shop,
+          shop_logo: this.shopinfo.shop_icon, // 店铺的logo
+          shop_img: this.iteminfo.shop_img  // 旗舰店标识，有的有有的没有
+        }
+        this.$store.commit('setShopInfo', shopInfo)
+      }
+      next()
     }
   }
 </script>
