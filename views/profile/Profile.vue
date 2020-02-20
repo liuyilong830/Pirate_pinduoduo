@@ -1,6 +1,6 @@
 <template>
   <div class="profile">
-    <b-scroll :probeType='3' :pullUpLoad='true' class="wrapper_profile">
+    <b-scroll class="wrapper_profile">
       <!-- 顶部基本信息 -->
       <base-info></base-info>
       <!-- 订单版块 -->

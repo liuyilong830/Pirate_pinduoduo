@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <keep-alive exclude="Detail">
+    <keep-alive :exclude="['Detail','PayMent']">
       <router-view></router-view>
     </keep-alive>
     <main-tab-bar v-show="$route.meta.showTabBar"></main-tab-bar>

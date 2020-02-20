@@ -27,5 +27,9 @@ export default {
   setShopInfo(state,payload) {
     state.shopInfo = payload
     window.localStorage.setItem('shopInfo',JSON.stringify(payload))
+  },
+  changeCount(state,payload) {
+    state.priceInfo = Object.assign({},state.priceInfo,payload)
+    // window.localStorage.setItem('priceInfo',JSON.stringify(state.priceInfo))
   }
 }

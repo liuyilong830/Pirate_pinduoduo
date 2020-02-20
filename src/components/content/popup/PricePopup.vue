@@ -46,14 +46,11 @@
             </ul>
           </div>
         </div>
-        <div class="count">
-          <span class="count_title">数量</span>
-          <div class="computed_count">
-            <div class="iconfont icon-jian2 public" :class="{on: count==1}" @click="decreaseClick"></div>
-            <span class="public">{{getCount}}</span>
-            <div class="iconfont icon-jia public" :class="{on: count==10}" @click="increaseClick"></div>
-          </div>
-        </div>
+        <count :count='count' :minCount='1' @decreaseClick='decreaseClick' @increaseClick='increaseClick'>
+          <template v-slot:count>
+            {{count}}
+          </template>
+        </count>
         <div class="content_bottom" @click="payClick">确定</div>
       </div>
     </transition>
@@ -61,8 +58,12 @@
 </template>
 
 <script>
+  import Count from '../../common/count/Count'
   export default {
     name: 'PricePopup',
+    components: {
+      Count
+    },
     model: {
       prop: 'val1',
       event: 'click'
@@ -217,6 +218,7 @@
         if(this.getPrice) {
           priceInfo.price = this.getPrice
           priceInfo.count = this.count
+          priceInfo.goodImg = this.img
           this.$router.push('/payment')
           this.$store.commit('setGoodsPrice',priceInfo)
           return 
@@ -336,34 +338,6 @@
     padding: 10px 10px 0;
     height: 290px;
     overflow: scroll;
-  }
-  .count {
-    height: 50px;
-    padding: 0 10px;
-    box-sizing: border-box;
-    border-bottom: 1px solid #f5f5f5;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: #545454;
-  }
-  .computed_count {
-    display: flex;
-    width: 90px;
-    height: 25px;
-    line-height: 25px;
-    justify-content: space-around;
-  }
-  .icon-jian2, .icon-jia {
-    color: #545454;
-    border-radius: 4px;
-    background-color: #cccccc;
-  }
-  .on {
-    background-color: #ececec;
-  }
-  .public {
-    flex: 1;
   }
   .content_bottom {
     width: 100vw;
