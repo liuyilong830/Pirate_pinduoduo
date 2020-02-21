@@ -160,3 +160,15 @@ exports.getPayPriceById = function (sid) {
     })
   })
 }
+// 根据uid传入该用户的收货地址信息
+exports.insertRecAddressInfo = function (uid,payload) {
+  var sql = `
+    insert into address(uid,rec_name,rec_phone,rec_address,rec_detail_add) values(?,?,?,?,?)
+  `
+  return new Promise((resolve,reject) => {
+    connection.query(sql, [uid,payload.recName,payload.recPhone,payload.address,payload.detailAddress] , function (error,data) {
+      if(error) reject(error)
+      resolve(data)
+    })
+  })
+}

@@ -19,6 +19,7 @@ export default {
     window.localStorage.removeItem('token')
     window.localStorage.removeItem('priceInfo')
     window.localStorage.removeItem('shopInfo')
+    window.localStorage.removeItem('recAddress')
   },
   setGoodsPrice(state,payload) {
     state.priceInfo = payload
@@ -31,5 +32,10 @@ export default {
   changeCount(state,payload) {
     state.priceInfo = Object.assign({},state.priceInfo,payload)
     // window.localStorage.setItem('priceInfo',JSON.stringify(state.priceInfo))
+  },
+  setRecAddress(state,payload) {
+    state.recAddress.push(payload)
+    console.log(state.recAddress)
+    window.localStorage.setItem('recAddress',JSON.stringify(state.recAddress))
   }
 }

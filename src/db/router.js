@@ -529,5 +529,20 @@ router.get('/detail/pay_data' , (req,res) => {
     })
   })
 })
+// 根据uid，设置用户的收货地址
+router.post('/set/rec_address' , (req,res) => {
+  
+  CRUD.insertRecAddressInfo(req.body.uid,req.body.payload).then(data => {
+    return res.json({
+      success_code: 200,
+      message: '添加成功'
+    })
+  }).catch(err => {
+    return res.json({
+      err_code: 500,
+      message: err.message
+    })
+  })
+})
 
 module.exports = router

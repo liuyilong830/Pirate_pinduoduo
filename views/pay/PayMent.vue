@@ -1,12 +1,27 @@
 <template>
   <div class="payment">
     <div class="receiving_address">
-      <div class="address_top">
+      <div class="address_top"  v-if="showRecAddress" @click="getAddress">
         <div class="address_title">
           <div class="iconfont icon-jia"></div>
           <span>手动添加收货地址</span>
         </div>
         <i class="iconfont icon-youjiantou"></i>
+      </div>
+      <!-- 如果有收货地址，则显示收货地址 -->
+      <div class="rec_address_top" v-else @click="getMyAddress">
+        <i class="iconfont icon-shouhuodizhi"></i>
+        <div class="rec_address_info">
+          <div class="name_and_phone">
+            <span class="name">{{recAddressInfo[0].recName}}</span>
+            <span>{{recAddressInfo[0].recPhone}}</span>
+          </div>
+          <div class="recaddress">
+            <span>{{recAddressInfo[0].address}}</span>
+            <span>{{recAddressInfo[0].detailAddress}}</span>
+          </div>
+        </div>
+        <div class="iconfont icon-youjiantou"></div>
       </div>
       <div class="dot"></div>
     </div>
@@ -51,30 +66,46 @@
     </count>
     <pay-mode></pay-mode>
     <pay></pay>
+
+    <rec-address v-model="openRecAddress" v-show="openRecAddress" @confirm='recConfirm'></rec-address>
+    <manage-address v-model="openRecAddress" v-show="openRecAddress" :recAddressList='recAddressInfo'></manage-address>
   </div>
 </template>
 
 <script>
   import Count from '../../src/components/common/count/Count'
   import PayMode from '../../src/components/common/pay/PayMode'
+  import RecAddress from './children/RecAddress'
   import Pay from './children/Pay'
+  import {mapGetters} from 'vuex'
+  import {setRecAddress} from '../../src/network/pay'
+  import ManageAddress from './children/ManageAddress'
   export default {
     name: 'PayMent',
     components: {
       Count,
       PayMode,
-      Pay
+      Pay,
+      RecAddress,
+      ManageAddress
     },
     data() {
       return {
         priceInfo: null,
         shopInfo: null,
-        change: 0
+        change: 0,
+        openRecAddress: false,
+        recAddressInfo: [],
+        isShow: true
       }
     },
     computed: {
       showSize() {
         return this.priceInfo.sTitle? true : false
+      },
+      ...mapGetters(['getUserId','getRecAddress']),
+      showRecAddress() {
+        return this.recAddressInfo.length == 0? true : false
       }
     },
     methods: {
@@ -97,11 +128,26 @@
       },
       changeAlipay() {
         this.change = 1
+      },
+      getAddress() {
+        this.openRecAddress = true
+      },
+      recConfirm(payload) {
+        setRecAddress(this.getUserId,payload).then(res => {
+          console.log(res)
+          payload.uid = this.getUserId
+          this.$store.commit('setRecAddress',payload)
+          this.recAddressInfo.push(payload)
+        })
+      },
+      getMyAddress() {
+        this.openRecAddress = true
       }
     },
     created() {
       this.priceInfo = JSON.parse(window.localStorage.getItem('priceInfo'))
       this.shopInfo = JSON.parse(window.localStorage.getItem('shopInfo'))
+      this.recAddressInfo = JSON.parse(window.localStorage.getItem('recAddress')) || []
     }
   }
 </script>
@@ -211,5 +257,31 @@
   }
   .count {
     margin-bottom: 10px;
+  }
+  .rec_address_top {
+    height: 70px;
+    background-color: #fff;
+    box-sizing: border-box;
+    padding: 0 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .rec_address_info {
+    flex: 85%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+  }
+  .icon-shouhuodizhi {
+    font-size: 20px;
+    flex: 10%;
+  }
+  .rec_address_top .icon-youjiantou {
+    flex: 5%;
+  }
+  .name_and_phone .name {
+    font-size: 16px;
+    font-weight: 700;
   }
 </style>

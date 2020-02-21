@@ -8,5 +8,11 @@ export default {
       return (state.priceInfo.price * (str.length*10) * state.priceInfo.count)/ (str.length*10)
     }
     return state.priceInfo.price * state.priceInfo.count
+  },
+  getUserId(state) {
+    return state.userInfo.uid
+  },
+  getRecAddress(state) {
+    return state.recAddress
   }
 }
