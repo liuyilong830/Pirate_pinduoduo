@@ -531,11 +531,69 @@ router.get('/detail/pay_data' , (req,res) => {
 })
 // 根据uid，设置用户的收货地址
 router.post('/set/rec_address' , (req,res) => {
-  
   CRUD.insertRecAddressInfo(req.body.uid,req.body.payload).then(data => {
+    console.log(data)
     return res.json({
       success_code: 200,
-      message: '添加成功'
+      message: '添加成功',
+      aid: data.insertId
+    })
+  }).catch(err => {
+    return res.json({
+      err_code: 500,
+      message: err.message
+    })
+  })
+})
+// 
+router.get('/getByAll/rec_address' , (req,res) => {
+  CRUD.getAddressByAll(req.query.payload).then(data => {
+    return res.json({
+      success_code: 200,
+      message: data
+    })
+  }).catch(err => {
+    return res.json({
+      err_code: 500,
+      message: err.message
+    })
+  })
+})
+// 根据uid，查询该用户所有的收货地址
+router.get('/get/rec_address' , (req,res) => {
+  CRUD.getRecAddressInfo(req.query.uid).then(data => {
+    return res.json({
+      success_code: 200,
+      message: data
+    })
+  }).catch(err => {
+    return res.json({
+      err_code: 500,
+      message: '服务器忙碌，请稍后再试...'
+    })
+  })
+})
+// 根据收货地址信息，删除该用户的指定收货地址
+router.post('/delete/rec_address' , (req,res) => {
+  CRUD.deleteAddress(req.body).then(data => {
+    return res.json({
+      success_code: 200,
+      message: '删除成功'
+    })
+  }).catch(err => {
+    return res.json({
+      err_code: 500,
+      message: '服务器忙碌，请稍后再试...'
+    })
+  })
+})
+// 根据uid更新该用户的指定收货地址
+router.post('/update/rec_address' , (req,res) => {
+  CRUD.updateAddress(req.body.payload).then(data => {
+    // console.log(data)
+    return res.json({
+      success_code: 200,
+      message: '更新成功'
     })
   }).catch(err => {
     return res.json({

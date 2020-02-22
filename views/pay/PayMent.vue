@@ -13,12 +13,12 @@
         <i class="iconfont icon-shouhuodizhi"></i>
         <div class="rec_address_info">
           <div class="name_and_phone">
-            <span class="name">{{recAddressInfo[0].recName}}</span>
-            <span>{{recAddressInfo[0].recPhone}}</span>
+            <span class="name">{{recAddressInfo[0].rec_name}}</span>
+            <span>{{recAddressInfo[0].rec_phone}}</span>
           </div>
           <div class="recaddress">
-            <span>{{recAddressInfo[0].address}}</span>
-            <span>{{recAddressInfo[0].detailAddress}}</span>
+            <span>{{recAddressInfo[0].rec_address}}</span>
+            <span>{{recAddressInfo[0].rec_detail_add}}</span>
           </div>
         </div>
         <div class="iconfont icon-youjiantou"></div>
@@ -68,7 +68,7 @@
     <pay></pay>
 
     <rec-address v-model="openRecAddress" v-show="openRecAddress" @confirm='recConfirm'></rec-address>
-    <manage-address v-model="openRecAddress" v-show="openRecAddress" :recAddressList='recAddressInfo'></manage-address>
+    <manage-address v-model="openRecAddress" v-show="openRecAddress" :recAddressList='getRecAddressInfo'></manage-address>
   </div>
 </template>
 
@@ -78,7 +78,7 @@
   import RecAddress from './children/RecAddress'
   import Pay from './children/Pay'
   import {mapGetters} from 'vuex'
-  import {setRecAddress} from '../../src/network/pay'
+  import {setRecAddress,getRecAddress} from '../../src/network/pay'
   import ManageAddress from './children/ManageAddress'
   export default {
     name: 'PayMent',
@@ -103,9 +103,12 @@
       showSize() {
         return this.priceInfo.sTitle? true : false
       },
-      ...mapGetters(['getUserId','getRecAddress']),
+      ...mapGetters(['getUserId']),
       showRecAddress() {
         return this.recAddressInfo.length == 0? true : false
+      },
+      getRecAddressInfo() {
+        return this.recAddressInfo
       }
     },
     methods: {
@@ -136,8 +139,8 @@
         setRecAddress(this.getUserId,payload).then(res => {
           console.log(res)
           payload.uid = this.getUserId
-          this.$store.commit('setRecAddress',payload)
           this.recAddressInfo.push(payload)
+          this.$store.commit('setRecAddress',this.recAddressInfo)
         })
       },
       getMyAddress() {
@@ -147,7 +150,19 @@
     created() {
       this.priceInfo = JSON.parse(window.localStorage.getItem('priceInfo'))
       this.shopInfo = JSON.parse(window.localStorage.getItem('shopInfo'))
-      this.recAddressInfo = JSON.parse(window.localStorage.getItem('recAddress')) || []
+      // this.recAddressInfo = JSON.parse(window.localStorage.getItem('recAddress')) || []
+      // 这里这么做的原因是因为如果服务器重启之后，我们的数据就丢失了，所以我们需要将数据通过接口从数据库中获取
+      if(!JSON.parse(window.localStorage.getItem('recAddress'))) {
+        getRecAddress(this.getUserId).then(res => {
+          console.log(res)
+          this.recAddressInfo = res.message
+          // 如果本地存储中没有recAddress的数据，就说明初始的时候vuex管理中没有该数据，所以需要将数据库中的数据保存在vuex中，方便之后添加地址直接push
+          console.log(res.message)
+          this.$store.commit('initRecAddress',res.message)
+        })
+      } else {
+        this.recAddressInfo = JSON.parse(window.localStorage.getItem('recAddress'))
+      }
     }
   }
 </script>
@@ -246,6 +261,11 @@
   }
   .size_and_type {
     color: #ababab;
+  }
+  .size, .type {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   .size_and_type span {
     font-size: 12px;

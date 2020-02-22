@@ -2,29 +2,29 @@
   <div class="manage-address">
     <ul class="address-list">
       <li class="item" v-for="(item,index) in recAddressList" :key="index">
-        <i class="iconfont icon-ca"></i>
+        <i class="iconfont icon-ca" @click="deleteItem(index)"></i>
         <div class="padding">
           <div class="item-info">
             <div class="name_and_phone">
-              <span>{{item.recName}}</span>
-              <span>{{item.recPhone}}</span>
+              <span>{{item.rec_name}}</span>
+              <span>{{item.rec_phone}}</span>
             </div>
             <div class="adress_and_detailadd">
-              <span>{{item.address}}</span>
-              <span>{{item.detailAddress}}</span>
+              <span>{{item.rec_address}}</span>
+              <span>{{item.rec_detail_add}}</span>
               <span v-if="index === 0" class="iconfont icon-gouSolid"></span>
             </div>
           </div>
           <div class="item-bottom">
-            <span :class="{active: index == currentIndex}">
+            <span :class="{active: index == currentIndex}" @click="activeClick(index)">
               <span 
                 class="iconfont" 
-                :class="{'icon-yuanquan':index !== currentIndex, 'icon-gou':index == currentIndex}" 
-                @click="activeClick(index)"></span>
+                :class="{'icon-yuanquan':index !== currentIndex, 'icon-gou':index == currentIndex}">
+              </span>
               {{index == currentIndex? '已设置为默认' : '设置为默认'}}
             </span>
             <div class="change">
-              <span>编辑</span>
+              <span @click="updateAddress(index)">编辑</span>
               <span class="zhiding">置顶</span>
             </div>
           </div>
@@ -37,18 +37,21 @@
     </div>
     <div class="btn" @click="closeManageAddress">返回按钮</div>
 
-    <rec-address v-model="openRecAddress" v-show="openRecAddress" @confirm='recConfirm'></rec-address>
+    <rec-address v-model="openRecAddress" v-if="openRecAddress" @confirm='newRecConfirm' :item='oneAddress' @updateConfirm='updateConfirm'></rec-address>
+    <delete-item text='确定要删除该地址吗？' v-model="openDeleteItem" v-show="openDeleteItem" @confirmDelete='confirmDelete'></delete-item>
   </div>
 </template>
 
 <script>
   import RecAddress from './RecAddress'
-  import {setRecAddress} from '../../../src/network/pay'
+  import {setRecAddress,deleteRecAddress,updateRecAddress} from '../../../src/network/pay'
   import {mapGetters} from 'vuex'
+  import DeleteItem from '../../../src/components/common/deleteItem/DeleteItem'
   export default {
     name: 'ManageAddress',
     components: {
-      RecAddress
+      RecAddress,
+      DeleteItem
     },
     model: {
       prop: 'val1',
@@ -57,35 +60,78 @@
     data() {
       return {
         openRecAddress: false,
-        recAddressList: null,
-        currentIndex: 0
+        currentIndex: 0,
+        openDeleteItem: false,
+        deleteIndex: 0,
+        updateIndex: 0,
+        oneAddress: {}
+      }
+    },
+    props: {
+      recAddressList: {
+        type: Array,
+        default() {
+          return []
+        }
       }
     },
     computed: {
-      ...mapGetters(['getUserId','getRecAddress'])
+      ...mapGetters(['getUserId'])
     },
     methods: {
+      // 点击返回按钮返回到支付页面
       closeManageAddress() {
+        if(this.currentIndex !== 0) {
+          this.recAddressList.splice(0,1,...this.recAddressList.splice(this.currentIndex,1,this.recAddressList[0]))
+          this.currentIndex = 0
+        }
         this.$emit('click',!this.$attrs.val1)
       },
+      // 打开添加收货地址的弹窗
       addNewAddress() {
+        this.oneAddress = {}
         this.openRecAddress = true
       },
-      recConfirm(payload) {
+      // 点击保存之后的回调函数，用于将数据保存在数据库、vuex、本地、临时变量中
+      newRecConfirm(payload) {
         setRecAddress(this.getUserId,payload).then(res => {
           console.log(res)
+          payload.aid = res.aid
           payload.uid = this.getUserId
-          this.$store.commit('setRecAddress',payload)
-          // this.recAddressInfo.push(payload)
-          // this.$emit('changeAddress')
+          this.recAddressList.push(payload)
+          this.$store.commit('setRecAddress',this.recAddressList)
         })
       },
       activeClick(index) {
         this.currentIndex = index
+      },
+      // 打开删除窗口
+      deleteItem(index) {
+        this.openDeleteItem = true
+        this.deleteIndex = index
+      },
+      // 选择确定之后的回调函数
+      confirmDelete() {
+        deleteRecAddress(this.recAddressList[this.deleteIndex]).then(res => {
+          console.log(res)
+          this.recAddressList.splice(this.deleteIndex,1)
+          this.$store.commit('deleteAddress',this.deleteIndex)
+        })
+      },
+      updateAddress(index) {
+        this.updateIndex = index
+        this.oneAddress = this.recAddressList[index]
+        this.openRecAddress = true
+        console.log(index)
+      },
+      updateConfirm(payload) {
+        payload.aid = this.recAddressList[this.updateIndex].aid
+        payload.uid = this.recAddressList[this.updateIndex].uid
+        updateRecAddress(payload).then(res => {
+          console.log(res)
+          this.recAddressList.splice(this.updateIndex,1,payload)
+        })
       }
-    },
-    created() {
-      this.recAddressList = this.getRecAddress
     }
   }
 </script>

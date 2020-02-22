@@ -34,8 +34,20 @@ export default {
     // window.localStorage.setItem('priceInfo',JSON.stringify(state.priceInfo))
   },
   setRecAddress(state,payload) {
-    state.recAddress.push(payload)
+    state.recAddress = payload
     console.log(state.recAddress)
+    window.localStorage.setItem('recAddress',JSON.stringify(payload))
+  },
+  initRecAddress(state,payload) {
+    state.recAddress = payload
+    window.localStorage.setItem('recAddress',JSON.stringify(state.recAddress))
+  },
+  deleteAddress(state,index) {
+    state.recAddress.splice(index,1)
+    window.localStorage.setItem('recAddress',JSON.stringify(state.recAddress))
+  },
+  updateAddress(state,payload) {
+    state.recAddress.splice(payload.index,1,payload.obj)
     window.localStorage.setItem('recAddress',JSON.stringify(state.recAddress))
   }
 }

@@ -48,6 +48,14 @@
       prop: 'val1',
       event: 'click'
     },
+    props: {
+      item: {
+        type: Object,
+        default() {
+          return {}
+        }
+      }
+    },
     data() {
       return {
         myAddressSlots: [
@@ -81,6 +89,7 @@
     },
     methods: {
       closeRecAddress() {
+        this.clearAddress()
         this.$emit('click',!this.$attrs.val1)
       },
       openAddress() {
@@ -103,15 +112,19 @@
         } else if(this.detailAddress.length == 0) {
           return this.getToast('请输入详细地址')
         }
-        this.$emit('confirm',this.getObj())
+        if(Object.keys(this.item).length !== 0) {
+          this.$emit('updateConfirm',this.getObj())
+        } else {
+          this.$emit('confirm',this.getObj())
+        }
         this.closeRecAddress()
       },
       getObj() {
         var obj = {}
-        obj.recName = this.recName
-        obj.recPhone = this.recPhone
-        obj.detailAddress = this.detailAddress
-        obj.address = this.getAddress
+        obj.rec_name = this.recName
+        obj.rec_phone = this.recPhone
+        obj.rec_detail_add = this.detailAddress
+        obj.rec_address = this.getAddress
         return obj
       },
       getToast(message,init = '') {
@@ -120,6 +133,21 @@
         setTimeout(() => {
           this.isToastShow = false
         },3000)
+      },
+      arrToObj(arr) {
+        [this.address.province,this.address.city,this.address.county] = arr
+      },
+      clearAddress() {
+        this.recName = this.recPhone = this.detailAddress = ''
+        this.address.province = this.address.city = this.address.county = null
+      }
+    },
+    created() {
+      if(Object.keys(this.item).length !== 0) {
+        this.recName = this.item.rec_name
+        this.recPhone = this.item.rec_phone
+        this.detailAddress = this.item.rec_detail_add
+        this.arrToObj(this.item.rec_address.split('-'))
       }
     }
   }

@@ -163,10 +163,87 @@ exports.getPayPriceById = function (sid) {
 // 根据uid传入该用户的收货地址信息
 exports.insertRecAddressInfo = function (uid,payload) {
   var sql = `
-    insert into address(uid,rec_name,rec_phone,rec_address,rec_detail_add) values(?,?,?,?,?)
+    insert into address(uid,rec_name,rec_phone,rec_address,rec_detail_add,aid) values(?,?,?,?,?,null);
   `
   return new Promise((resolve,reject) => {
-    connection.query(sql, [uid,payload.recName,payload.recPhone,payload.address,payload.detailAddress] , function (error,data) {
+    connection.query(sql, [uid,payload.rec_name,payload.rec_phone,payload.rec_address,payload.rec_detail_add] , function (error,data) {
+      if(error) reject(error)
+      resolve(data)
+    })
+  })
+}
+
+exports.getAddressByAll = function (payload) {
+  var sql = `
+    select *
+    from address 
+    where uid=? and rec_name=? and rec_phone=? and rec_address=? and rec_detail_add=?
+  `
+  return new Promise((resolve,reject) => {
+    connection.query(sql, [
+      payload.uid,
+      payload.rec_name,
+      payload.rec_phone,
+      payload.rec_address,
+      payload.rec_detail_add
+    ] , function (error,data) {
+      if(error) reject(error)
+      resolve(data)
+    })
+  })
+}
+
+exports.getAllAddressCount = function () {
+  var sql = 'select count(*) as count from address'
+  return new Promise((resolve,reject) => {
+    connection.query(sql , function (error,data) {
+      if(error) reject(error)
+      resolve(data)
+    })
+  })
+}
+// 根据uid查询该用户的收货地址
+exports.getRecAddressInfo = function (uid) {
+  var sql = `select * from address where uid = ?`
+  return new Promise((resolve,reject) => {
+    connection.query(sql,uid, function(error,data) {
+      if(error) reject(error)
+      resolve(data)
+    })
+  })
+}
+// 根据收货地址删除该用户的指定收货地址
+exports.deleteAddress = function (payload) {
+  var sql = `delete from address where uid= ? and rec_name=? and rec_phone=? and rec_address=? and rec_detail_add=?`
+  return new Promise((resolve,reject) => {
+    connection.query(sql,[
+      payload.uid,
+      payload.rec_name,
+      payload.rec_phone,
+      payload.rec_address,
+      payload.rec_detail_add
+    ], function(error,data) {
+      if(error) reject(error)
+      resolve(data)
+    })
+  })
+}
+// 根据uid，更新该用户的指定收货地址
+exports.updateAddress = function (payload) {
+  var sql = `
+    update address
+    set rec_name=?, rec_phone=?, rec_address=?, rec_detail_add=?
+    where uid = ? and aid = ?
+  `
+  return new Promise((resolve,reject) => {
+    connection.query(sql,[
+      payload.rec_name,
+      payload.rec_phone,
+      payload.rec_address,
+      payload.rec_detail_add,
+      payload.uid,
+      payload.aid
+    ], function(error,data) {
       if(error) reject(error)
       resolve(data)
     })
