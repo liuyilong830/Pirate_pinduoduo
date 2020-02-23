@@ -44,6 +44,9 @@
           var str = this.userInfo.phone.substr(3,4)
           return this.userInfo.phone.replace(str,'****')
         } */
+        if(!this.userInfo) {
+          return false
+        }
         if(this.userInfo.username) {
           return this.userInfo.username
         } else {

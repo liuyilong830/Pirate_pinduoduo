@@ -115,7 +115,7 @@
         deleteRecAddress(this.recAddressList[this.deleteIndex]).then(res => {
           console.log(res)
           this.recAddressList.splice(this.deleteIndex,1)
-          this.$store.commit('deleteAddress',this.deleteIndex)
+          this.$store.commit('deleteAddress',this.recAddressList)
         })
       },
       updateAddress(index) {
@@ -130,6 +130,7 @@
         updateRecAddress(payload).then(res => {
           console.log(res)
           this.recAddressList.splice(this.updateIndex,1,payload)
+          this.$store.commit('updateAddress',this.recAddressList)
         })
       }
     }
@@ -143,6 +144,7 @@
     background-color: #f5f5f5;
     position: fixed;
     top: 0;
+    overflow: scroll;
   }
   .content {
     background-color: #fff;

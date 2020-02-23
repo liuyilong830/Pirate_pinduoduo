@@ -15,6 +15,9 @@ export default {
   signOut(state) {
     state.userInfo = null
     state.token = null
+    state.priceInfo = null
+    state.shopInfo = null
+    state.recAddress = null
     window.localStorage.removeItem('userInfo')
     window.localStorage.removeItem('token')
     window.localStorage.removeItem('priceInfo')
@@ -42,12 +45,12 @@ export default {
     state.recAddress = payload
     window.localStorage.setItem('recAddress',JSON.stringify(state.recAddress))
   },
-  deleteAddress(state,index) {
-    state.recAddress.splice(index,1)
-    window.localStorage.setItem('recAddress',JSON.stringify(state.recAddress))
+  deleteAddress(state,array) {
+    state.recAddress = array
+    window.localStorage.setItem('recAddress',JSON.stringify(array))
   },
-  updateAddress(state,payload) {
-    state.recAddress.splice(payload.index,1,payload.obj)
-    window.localStorage.setItem('recAddress',JSON.stringify(state.recAddress))
+  updateAddress(state,array) {
+    state.recAddress = array
+    window.localStorage.setItem('recAddress',JSON.stringify(array))
   }
 }

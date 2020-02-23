@@ -67,7 +67,7 @@
     <pay-mode></pay-mode>
     <pay></pay>
 
-    <rec-address v-model="openRecAddress" v-show="openRecAddress" @confirm='recConfirm'></rec-address>
+    <rec-address v-model="open" v-show="open" @confirm='recConfirm'></rec-address>
     <manage-address v-model="openRecAddress" v-show="openRecAddress" :recAddressList='getRecAddressInfo'></manage-address>
   </div>
 </template>
@@ -95,6 +95,7 @@
         shopInfo: null,
         change: 0,
         openRecAddress: false,
+        open: false,
         recAddressInfo: [],
         isShow: true
       }
@@ -133,7 +134,7 @@
         this.change = 1
       },
       getAddress() {
-        this.openRecAddress = true
+        this.open = true
       },
       recConfirm(payload) {
         setRecAddress(this.getUserId,payload).then(res => {
