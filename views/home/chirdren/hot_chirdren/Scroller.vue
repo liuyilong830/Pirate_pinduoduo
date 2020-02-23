@@ -43,13 +43,18 @@
     methods: {
       // 获取 content 的实际宽度
       getItemWidth() {
+        console.log(this.$refs.content_item[0].getBoundingClientRect())
+        var wStr = window.getComputedStyle(this.$refs.content_item[0]).width
+        var w = wStr.substring(0,wStr.length - 2)
         for (var i = 0; i < this.scroller.length / 2; i++) {
-          this.width += this.$refs.content_item[0].clientWidth
+          this.width += Number(w)
         }
       },
       // 获取滑块高亮部分的宽度
       getScroller() {
-        this.scrollerW = this.$refs.scroll.clientWidth
+        var wStr = window.getComputedStyle(this.$refs.scroll).width
+        var w = Number(wStr.substring(0,wStr.length - 2))
+        this.scrollerW = w
         this.viewW = document.documentElement.clientWidth
         this.highLightW = this.viewW * this.scrollerW / this.width
         this.$refs.scroll.firstChild.style.width = this.highLightW + 'px'
@@ -71,7 +76,7 @@
       // 因为数据时图片，所以如果在mounted钩子中进行下面的操作的话可能width会是0，因为此时数据显示比这里要慢
       // 动态获取每个 item 的宽度，所有 item 宽度和的一半就是实际 content 的动态横向滚动距离
       this.getItemWidth()
-      this.$refs.content.style.width = this.width + 'px'
+      this.$refs.content.style.width = this.width + 0.01 + 'px'
       this.$nextTick(() => {
         if(!this.scroll) {
           this.scroll = new BScroll(this.$refs.wrapper_x,{
@@ -103,7 +108,7 @@
   }
   .content {
     height: 150px;
-    width: 657px;
+    width: 726px;
     display: flex;
     flex-wrap: wrap;
     padding: 0 5px;
