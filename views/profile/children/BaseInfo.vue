@@ -1,5 +1,5 @@
 <template>
-  <div class='base_info' v-if='Object.keys(userInfo) !== null'>
+  <div class='base_info' v-if='Object.keys(userInfo).length !== 0'>
     <div class='top_header'>
       <div class='info_img' @click="personInfo">
         <img :src='userInfo.head_img'>

@@ -36,6 +36,7 @@
     padding: 10px;
   }
   .shop_info {
+    height: 40px;
     display: flex;
     flex: 70%;
   }

@@ -40,7 +40,7 @@
               <div class="content_code">
                 <i class="iconfont icon-yanzhengma"></i>
                 <input type="text" name="code" v-model="imgcode" class="public code" placeholder="图片验证码">
-                <img class="svg_img" ref="captcha" src="http://localhost:3000/captcha/svg" @click="getSvgImage" alt="">
+                <img class="svg_img" ref="captcha" src="http://47.114.167.61/api/captcha/svg" @click="getSvgImage" alt="">
               </div>
             </div>
 
@@ -51,7 +51,7 @@
 
             <div class="footer_btn">
               <input class="submit" type="submit" value="同意协议并登录" @click.prevent="submitLogin">
-              <button>返回</button>
+              <button @click.prevent='fanhuiClick'>返回</button>
             </div>
 
             <toast v-show="isToastShow" :text='text'></toast>
@@ -124,7 +124,7 @@
       },
       // 动态获取SVG图片验证码
       getSvgImage() {
-        this.$refs.captcha.src = 'http://localhost:3000/captcha/svg?time=' + new Date()
+        this.$refs.captcha.src = 'http://47.114.167.61/api/captcha/svg?time=' + new Date()
       },
       // 点击登录按钮之后进行的操作
       submitLogin() {
@@ -179,11 +179,15 @@
       },
       loginClick() {
         this.isShow = true
+      },
+      fanhuiClick() {
+        console.log(this.$router.replace(window.localStorage.getItem('fromPath')))
+        this.isShow = false
       }
     },
     created() {
       this.$store.commit('signOut')
-    }
+    },
   }
 </script>
 

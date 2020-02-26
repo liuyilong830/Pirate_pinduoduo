@@ -6,7 +6,7 @@
         <span class="title">头像</span>
         <img :src="userInfo.head_img" alt="">
       </div>
-      <div class="item">
+      <div class="item" @click="setNickName">
         <span class="title">昵称</span>
         <span>{{ getNickName }}</span>
       </div>
@@ -39,9 +39,10 @@
       <button class="btn" @click="backClick">&nbsp;返 回&nbsp;</button>
     </div>
 
+    <signature-popup v-model="showNickName" typeText='text' :signature.sync='userInfo.username' @confirmSign='handleConfirmNick' v-if="showNickName"/>
     <birthday-popup v-model='popupVisible' v-bind.sync='date' @confirm='handleConfirm' v-if="popupVisible"></birthday-popup>
     <sex-popup v-model="sexPop" :sex.sync='userInfo.sex' @confirmSex='handleConfirmSex' v-show="sexPop"></sex-popup>
-    <signature-popup v-model="signaturePop" :signature.sync='userInfo.signature' @confirmSign='handleConfirmSign' v-if="signaturePop"/>
+    <signature-popup v-model="signaturePop" typeText='textarea' :signature.sync='userInfo.signature' @confirmSign='handleConfirmSign' v-if="signaturePop"/>
     <address-popup v-model="addressPop" v-if="addressPop" v-bind.sync='address' @confilmAddress='handleConfirmAddress'></address-popup>
     <phone-popup v-model="phonePop" v-if="phonePop" :phone.sync='userInfo.phone' @confirmPhone='handleConfirmPhone'></phone-popup>
   </div>
@@ -70,6 +71,7 @@
         popupVisible: false, // 控制生日选择组件的打开和关闭
         sexPop : false, // 控制性别选择组件的打开和关闭
         signaturePop: false, // 控制地区选择组件的打开和关闭
+        showNickName: false,
         addressPop: false,
         phonePop: false,
         date: {
@@ -194,6 +196,15 @@
           console.log(res)
         })
         this.$store.commit('setBaseInfo',{phone})
+      },
+      setNickName() {
+        this.showNickName = true
+      },
+      handleConfirmNick(username) {
+        setUserBaseInfo({username}).then(res => {
+          console.log(res)
+        })
+        this.$store.commit('setBaseInfo',{username})
       }
     },
     created() {

@@ -8,7 +8,8 @@
         </div>
       </div>
       <div class="signature">
-        <textarea name="" class="textarea" cols="30" :value='$attrs.signature' @input="inputTextarea" rows="4" placeholder="个性签名可以让别人更想了解你哟"></textarea>
+        <textarea v-if="typeText == 'textarea'" class="textarea" cols="30" :value='$attrs.signature' @input="inputTextarea" rows="4" placeholder="个性签名可以让别人更想了解你哟"></textarea>
+        <input type="text" v-else-if="typeText == 'text'" class="text" :value='$attrs.signature' @input="inputTextarea" placeholder="请设置你的昵称">
       </div>
       <div class="btn">
         <button v-if="!prevShow" disabled>保存</button>
@@ -29,6 +30,12 @@
     model: {
       prop: 'val1',
       event: 'click'
+    },
+    props: {
+      typeText: {
+        type: String,
+        default: 'text'
+      }
     },
     computed: {
       prevShow() {
@@ -111,6 +118,14 @@
     border: 1px solid #e0dada;
     border-radius: 6px;
     resize: none;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+  .text {
+    width: 100%;
+    height: 40px;
+    border: 1px solid #e0dada;
+    border-radius: 6px;
     font-size: 15px;
     line-height: 1.5;
   }

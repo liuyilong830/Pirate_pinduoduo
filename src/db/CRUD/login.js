@@ -64,6 +64,16 @@ exports.getUserByUserId = function (userId) {
   })
 }
 // 根据用户的id修改生日
+exports.setUserNickName = function (uid, value) {
+  return new Promise((resolve,reject) => {
+    var sql = 'update users set username=? where uid=?'
+    connection.query(sql, [value,uid] , (error,data) => {
+      if(error) reject(error)
+      resolve(data)
+    })
+  })
+}
+// 根据用户的id修改生日
 exports.setUserBirthday = function (uid, value) {
   return new Promise((resolve,reject) => {
     var sql = 'update users set date=? where uid=?'

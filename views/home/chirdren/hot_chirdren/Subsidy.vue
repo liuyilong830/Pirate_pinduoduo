@@ -59,6 +59,9 @@
     margin-bottom: 5px;
     justify-content: space-between;
   }
+  .top_left {
+    flex: 75%;
+  }
   .top_left img {
     width: 15%;
     vertical-align: middle;
@@ -67,6 +70,10 @@
     font-weight: 600;
     color: #333;
     font-size: 16px;
+  }
+  .top_right {
+    flex: 25%;
+    text-align: right;
   }
   .solid {
     display: inline-block;

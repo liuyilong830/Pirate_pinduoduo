@@ -87,11 +87,13 @@ router.beforeEach((to , from , next) => {
       } else if(res.err_code == 0) {
         window.localStorage.removeItem('token')
         window.localStorage.removeItem('userInfo')
+        window.localStorage.setItem('fromPath',from.path)
         return next('/login')
       }
     })
+  }else {
+    next()
   }
-  next()
 })
 
 export default router
