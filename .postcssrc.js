@@ -14,8 +14,7 @@ module.exports = {
       selectorBlackList: [],
       minPixelValue: 1,
       mediaQuery: false,
-      replace: true,
-      selectorBlackList: ['tabbar']
+      replace: true
     }
   }
 }

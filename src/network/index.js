@@ -2,7 +2,7 @@ import axios from 'axios'
 
 export function request(config) {
   const instance = axios.create({
-    baseURL: 'http://47.114.167.61/api/',
+    baseURL: 'http://vue_pdd.coderlyl.cn//api/',
     timeout: 5000,
     withCredentials: true
   })

@@ -1,6 +1,6 @@
 <template>
   <div class="wrapper-top" ref="wrapperTop">
-    <ul class="content" ref="content">
+    <ul class="wrapper-top-content" ref="content">
       <li 
         class="content_item" 
         v-for="(item,index) in list" 
@@ -76,9 +76,9 @@
   .wrapper-top {
     width: 100vw;
     overflow: hidden;
-    box-shadow: 0 3px 5px #615d5d17;;
+    box-shadow: 0 3px 5px #615d5d17;
   }
-  .content {
+  .wrapper-top-content {
     height: 40px;
     width: 1000px;
     display: flex;
